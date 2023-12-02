@@ -11,18 +11,21 @@ function Signup() {
     role: "REGULAR",
   });
   const navigate = useNavigate();
+
   const signup = async () => {
     try {
       if (user.username === "" || user.password === "") {
         alert("Username and passowrd cannot be empty!");
       } else {
-        const currentUser = await client.signup(user);
-        navigate("/home/" + currentUser._id);
+        await client.signup(user);
+        alert("Sign up successful!");
+        navigate("/signin");
       }
     } catch (err) {
       setError(err.response.data.message);
     }
   };
+
   return (
     <div className="container w-50 pt-2">
       <h1>Signup</h1>

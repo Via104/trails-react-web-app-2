@@ -3,7 +3,7 @@ import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import * as client from "../Users/client";
 
 function Navigation() {
-  const id = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const links = [
     { to: "/home", label: "Home" },
@@ -53,9 +53,11 @@ function Navigation() {
             Sign In
           </Link>
         )}
-        <Link onClick={signout} className="btn bg-danger text-white">
-          Sign Out
-        </Link>
+        {id && (
+          <Link onClick={signout} className="btn bg-danger text-white">
+            Sign Out
+          </Link>
+        )}
       </div>
     </div>
   );
