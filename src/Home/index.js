@@ -1,26 +1,61 @@
 import { React, useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navigation from "../Navigation";
+import * as client from "../Users/client.js";
 
 function Home() {
-  const { pathname } = useLocation();
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const [trails, setTrails] = useState([]);
-  const [favourites, setFavourites] = useState([]);
+  const [trails, setTrails] = useState([]); // trails displayed on home
+  const [favourites, setFavourites] = useState([]); // users favourited trails
+  const [account, setAccount] = useState({
+    _id: null,
+    username: "",
+    passowrd: "",
+    role: "REGULAR",
+  });
 
-  const fetchTrails = async () => {
-    // const trails = await client.findTrailsById();
+  const fetchFavourites = async () => {
+    const favs = await client.findFavouritesByUserId(id);
+    setFavourites(favs);
+  };
+
+  const saveToFavourites = async (trail) => {
+    setFavourites(trail);
+    await client.addToFavourites(account);
+  };
+
+  const fetchAllTrails = async () => {
+    const trails = await client.findAllTrails();
     setTrails(trails);
   };
+
+  const fetchAccount = async (id) => {
+    try {
+      if (id) {
+        const account = await client.findUserById(id);
+        setAccount(account);
+      } else {
+        const account = await client.account();
+        setAccount(account);
+      }
+    } catch (err) {
+      navigate("/signin");
+    }
+  };
+
   useEffect(() => {
-    fetchTrails();
+    fetchAccount(id);
+    console.log("current account: " + account);
+    // fetchAllTrails();
+    // fetchFavourites();
   }, []);
 
   return (
     <div>
       <Navigation />
+      <div>Current User: {id}</div>
 
       {/* search section */}
       <div className="mt-3 bg-success">
@@ -39,7 +74,14 @@ function Home() {
       {/* Local favourite trails */}
       <div className="container-fluid p-3">
         <h3>Local favourites near (...city name...)</h3>
+
+        {/* able to add a trail if admin */}
+        {account.role === "ADMIN" && (
+          <Link className="btn btn-success mb-3">Add a trail</Link>
+        )}
+
         <div className="d-flex">
+          {/* {trails.map((trail) => { */}
           <Link
             to={`/`}
             className="card w-25 me-2"
@@ -51,7 +93,23 @@ function Home() {
               <p className="fs-6 fw-bold">Trail name</p>
               <p className="fs-6 fw-lighter">Location</p>
             </div>
-            <Link className="btn btn-secondary w-50">Save to favourite</Link>
+
+            <div className="row">
+              {/* ablt to add to favourite if logged in */}
+              {id && (
+                <Link
+                  className="btn btn-warning w-50"
+                  // onClick={saveToFavourites({ id })}
+                >
+                  Save to favourite
+                </Link>
+              )}
+
+              {/* able to edit a trail if admin */}
+              {account.role === "ADMIN" && (
+                <Link className="btn btn-primary w-50">Edit</Link>
+              )}
+            </div>
           </Link>
         </div>
       </div>

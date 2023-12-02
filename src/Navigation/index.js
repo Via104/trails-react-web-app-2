@@ -1,19 +1,23 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
+import * as client from "../Users/client";
 
 function Navigation() {
+  const id = useParams();
+  const navigate = useNavigate();
   const links = [
     { to: "/home", label: "Home" },
     { to: "/community", label: "Community" },
     { to: "/favourite", label: "Favourites" },
   ];
-  const linksAtEnd = [
-    // { to: "/signup", label: "Signup" },
-    // { to: "/admin", label: "Admin" },
-    { to: "/profile", label: "Profile" },
-  ];
+  const linksAtEnd = [{ to: "/profile", label: "Profile" }];
   const active = (path) => (pathname.includes(path) ? "active" : "");
   const { pathname } = useLocation();
+
+  const signout = async () => {
+    await client.signout();
+    navigate("/signin");
+  };
   return (
     <div className="d-flex justify-content-between p-2">
       <div>
@@ -39,8 +43,18 @@ function Navigation() {
             {link.label}
           </Link>
         ))}
-        <Link key={"/signin"} to={"/signin"} className="btn bg-secondary">
-          signin
+        {/* shows sign in button if not logged in */}
+        {!id && (
+          <Link
+            key={"/signin"}
+            to={"/signin"}
+            className="btn bg-success text-white"
+          >
+            Sign In
+          </Link>
+        )}
+        <Link onClick={signout} className="btn bg-danger text-white">
+          Sign Out
         </Link>
       </div>
     </div>
