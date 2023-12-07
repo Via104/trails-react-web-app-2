@@ -1,7 +1,9 @@
 import { React, useState, useEffect } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navigation from "../Navigation";
+import Footer from "../Navigation/footer.js";
 import * as client from "../Users/client.js";
+import "./index.css";
 
 function Home() {
   const { id } = useParams();
@@ -16,19 +18,23 @@ function Home() {
     role: "REGULAR",
   });
 
-  const fetchFavourites = async () => {
+  const fetchFavourites = async (id) => {
     const favs = await client.findFavouritesByUserId(id);
+    console.log("favs: " + favs);
     setFavourites(favs);
+    // setTrails(favs);
   };
 
-  const saveToFavourites = async (trail) => {
-    setFavourites(trail);
-    await client.addToFavourites(account);
+  // add a given trail to favourites
+  const saveToFavourites = async (userId, trail) => {
+    await client.addToFavourites(userId, trail);
+    setFavourites([...favourites, trail]);
+    alert("Added trail to favourite!");
   };
 
   const fetchAllTrails = async () => {
-    const trails = await client.findAllTrails();
-    setTrails(trails);
+    const fetchedTrails = await client.findAllTrails();
+    setTrails(fetchedTrails.data);
   };
 
   const fetchAccount = async (id) => {
@@ -45,17 +51,21 @@ function Home() {
     }
   };
 
+  const addTrail = async () => {
+    navigate(`/addTrail/${id}`);
+    fetchFavourites(id); // re-fetch all favourites
+    setTrails([...favourites, ...trails]);
+  };
+
   useEffect(() => {
     fetchAccount(id);
-    console.log("current account: " + account);
-    // fetchAllTrails();
-    // fetchFavourites();
+    fetchAllTrails();
+    // fetchFavourites(id);
   }, []);
 
   return (
     <div>
       <Navigation />
-      <div>Current User: {id}</div>
 
       {/* search section */}
       <div className="mt-3 bg-success">
@@ -73,68 +83,67 @@ function Home() {
 
       {/* Local favourite trails */}
       <div className="container-fluid p-3">
-        <h3>Local favourites near (...city name...)</h3>
+        <h3>Local Favourites</h3>
 
         {/* able to add a trail if admin */}
         {account.role === "ADMIN" && (
-          <Link className="btn btn-success mb-3">Add a trail</Link>
+          <button
+            onClick={() => addTrail()}
+            // to={`/addTrail/${id}`}
+            className="btn btn-success mb-3"
+          >
+            Add a trail
+          </button>
         )}
 
-        <div className="d-flex">
-          {/* {trails.map((trail) => { */}
-          <Link
-            to={`/`}
-            className="card w-25 me-2"
-            style={{ textDecoration: "none" }}
-          >
-            <div className="card-body">
-              <img src="..." className="card-img-top" alt="..."></img>
-              <p className="fw-light">Rating</p>
-              <p className="fs-6 fw-bold">Trail name</p>
-              <p className="fs-6 fw-lighter">Location</p>
-            </div>
+        <div className="container bg-body-secondary">
+          {trails.map((trail) => (
+            <Link
+              key={trail.id}
+              to={trail.url}
+              style={{ textDecoration: "none" }}
+            >
+              <div className="card" id={trail.id}>
+                {/* <img src="..." className="card-img-top" alt="..."></img> */}
+                <p className="fs-6 fw-bold">{trail.name}</p>
+                <p className="fs-6 fw-lighter text-wrapper">
+                  {trail.description}
+                </p>
+                <p>Length: {trail.length} miles</p>
+                <p className="fw-light fst-italic">Rating: {trail.rating}</p>
 
-            <div className="row">
-              {/* ablt to add to favourite if logged in */}
-              {id && (
-                <Link
-                  className="btn btn-warning w-50"
-                  // onClick={saveToFavourites({ id })}
-                >
-                  Save to favourite
-                </Link>
-              )}
+                <div className="row justify-content-around">
+                  {/* able to add to favourite if logged in */}
+                  {id && (
+                    <Link
+                      className="btn btn-warning"
+                      style={{ width: "150px" }}
+                      onClick={() => {
+                        saveToFavourites(id, trail); // save trail to favs
+                      }}
+                    >
+                      Save to favourite
+                    </Link>
+                  )}
 
-              {/* able to edit a trail if admin */}
-              {account.role === "ADMIN" && (
-                <Link className="btn btn-primary w-50">Edit</Link>
-              )}
-            </div>
-          </Link>
+                  {/* able to edit a trail if admin */}
+                  {account.role === "ADMIN" && (
+                    <Link
+                      to={`/editTrail/${id}/${trail.id}`}
+                      className="btn btn-primary"
+                      style={{ width: "100px" }}
+                    >
+                      Edit
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-success p-3">
-        <div className="d-flex">
-          <ul class="list-group list-group-flush p-2">
-            <Link to={`/search`} className="list-group-item border-0 fw-bolder">
-              Explore
-            </Link>
-            <Link to={`/`} className="list-group-item border-0">
-              Countries
-            </Link>
-            <Link to={`/`} className="list-group-item border-0">
-              Cities
-            </Link>
-          </ul>
-          <ul class="list-group list-group-flush p-2">
-            <Link to={`/`} className="list-group-item border-0 fw-bolder">
-              ...
-            </Link>
-          </ul>
-        </div>
-      </div>
+      <Footer></Footer>
     </div>
   );
 }

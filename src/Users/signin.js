@@ -26,7 +26,7 @@ function Signin() {
   };
 
   return (
-    <div className="container w-50 pt-2">
+    <div className="container-fluid w-50 pt-2">
       <h1>Sign In</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       <input

@@ -5,12 +5,15 @@ import * as client from "../Users/client";
 function Navigation() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const links = [
-    { to: "/home", label: "Home" },
-    { to: "/community", label: "Community" },
-    { to: "/favourite", label: "Favourites" },
+    { to: id ? `/home/${id}` : "/home", label: "Home" },
+    { to: id ? `/community/${id}` : "/community", label: "Community" },
+    // { to: id ? `/favourites/${id}` : "/favourites", label: "Favourites" },
   ];
-  const linksAtEnd = [{ to: "/profile", label: "Profile" }];
+  const linksAtEnd = [
+    { to: id ? `/profile/${id}` : "/profile", label: "Profile" },
+  ];
   const active = (path) => (pathname.includes(path) ? "active" : "");
   const { pathname } = useLocation();
 
@@ -20,13 +23,13 @@ function Navigation() {
   };
   return (
     <div className="d-flex justify-content-between p-2">
-      <div>
+      <div className="align-middle">
         {links.map((link) => (
           <Link
             key={link.to}
             to={link.to}
             className={`pe-3 ${active(link.to)}`}
-            style={{ textDecoration: "none" }}
+            style={{ textDecoration: "none", color: "darkgreen" }}
           >
             {link.label}
           </Link>
@@ -38,7 +41,7 @@ function Navigation() {
             key={link.to}
             to={link.to}
             className={`pe-3 ${active(link.to)}`}
-            style={{ textDecoration: "none" }}
+            style={{ textDecoration: "none", color: "darkgreen" }}
           >
             {link.label}
           </Link>
@@ -54,7 +57,7 @@ function Navigation() {
           </Link>
         )}
         {id && (
-          <Link onClick={signout} className="btn bg-danger text-white">
+          <Link onClick={signout} className="btn bg-secondary text-white">
             Sign Out
           </Link>
         )}

@@ -1,6 +1,7 @@
 import axios from "axios";
 // export const USERS_API = process.env.REACT_APP_API_URL;
 export const USERS_API = "http://localhost:4000/api/users";
+export const TRAILS_API = "http://localhost:4000/api/trails";
 
 export const signin = async (user) => {
   const response = await axios.post(`${USERS_API}/signin`, user);
@@ -59,24 +60,54 @@ export const findFavouritesByUserId = async (id) => {
   return response.data;
 };
 
-export const addToFavourites = async (id) => {
-  const response = await axios.put(`${USERS_API}/${id}/favourites`);
+export const addToFavourites = async (userId, trail) => {
+  const response = await axios.put(
+    `${USERS_API}/${userId}/favourites/${trail.id}`,
+    trail
+  );
   return response.data;
 };
 
 export const findAllTrails = async () => {
   const options = {
     method: "GET",
-    url: "https://trailapi-trailapi.p.rapidapi.com/trails/%7Bid%7D/maps/",
+    url: "https://trailapi-trailapi.p.rapidapi.com/trails/explore/",
+    params: {
+      lat: "38.79908",
+      lon: "-104.88353",
+    },
     headers: {
-      "X-RapidAPI-Key": "SIGN-UP-FOR-KEY",
+      "X-RapidAPI-Key": "d102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93",
       "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
     },
   };
   try {
     const response = await axios.request(options);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);
   }
+};
+
+export const findTrailByID = async (searchID) => {
+  const options = {
+    method: "GET",
+    url:
+      "https://trailapi-trailapi.p.rapidapi.com/trails/" + searchID.toString(),
+    headers: {
+      "X-RapidAPI-Key": "d102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93",
+      "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
+    },
+  };
+
+  const response = await axios.request(options);
+  console.log(response.data);
+
+  return response.data;
+};
+
+export const updateTrail = async (trail) => {
+  const response = await axios.put(`${TRAILS_API}/${trail.id}`, trail);
+  return response.data;
 };
