@@ -14,7 +14,7 @@ function Home() {
     <div className="container-fluid">
       <div className="d-flex"><h2>HomePage</h2></div>
       {trails.map((trail, index) => (
-        <Link to={`/trails/Details/${trail._id}`}
+        <Link to={`/details/${trail._id}`}
           key={index}
           className="card" style={{ "width": "18rem" }}>
           <div className="card-body">

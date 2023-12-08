@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding: 16px; /* Add padding as needed */
+}
+
+.card.home {
+  border: 1px solid #077632;
+  padding: 16px;
+  margin: 16px;
+  width: 300px; 
+  text-decoration: "none";
+}
+
+.text-wrapper {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Adjust the number of lines you want to display */
+  -webkit-box-orient: vertical;
+  max-width: 100%; /* Ensure the text doesn't overflow horizontally */
+  white-space: normal; 
+}
