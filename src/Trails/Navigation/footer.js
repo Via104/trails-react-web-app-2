@@ -5,7 +5,7 @@ function Footer() {
   return (
     <div className="bg-success p-3 mt-5">
       <div className="d-flex">
-        <ul class="list-group list-group-flush p-2">
+        <ul className="list-group list-group-flush p-2">
           <Link
             to={`/search`}
             className="list-group-item border-0 fw-bolder bg-success"

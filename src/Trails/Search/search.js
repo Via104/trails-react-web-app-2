@@ -85,14 +85,14 @@ function Search() {
                 {JSON.stringify(results, null, 2)}
             </pre> */}
 
-            <div class="d-flex flex-row flex-wrap">
+            <div className="d-flex flex-row flex-wrap">
                 {results.map((trail) => (
-                    <div class="card .col-md-8">
+                    <div className="card .col-md-8">
                         <img src="green2.jpg"
-                            class="card-img-top" alt="..."></img>
-                        <div class="card-body">
-                            <h5 class="card-title">{trail.name}</h5>
-                            <p class="card-text">
+                            className="card-img-top" alt="..."></img>
+                        <div className="card-body">
+                            <h5 className="card-title">{trail.name}</h5>
+                            <p className="card-text">
                                 {trail.description}
                             </p>
                         </div>
