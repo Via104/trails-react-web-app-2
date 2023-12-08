@@ -1,6 +1,7 @@
-.card {
-  width: 1400px;
-  height: 800px;
+.card.details{
+  width: 1200px;
+  border-radius: 10px;
+  --bs-card-inner-border-radius: 10px;
 }
 
 .tag {
