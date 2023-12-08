@@ -1,0 +1,11 @@
+.card {
+  width: 1400px;
+  height: 800px;
+}
+
+.tag {
+  border-radius: 5px;
+  border-color: black;
+  border: 2px;
+  border-style: solid;
+}
