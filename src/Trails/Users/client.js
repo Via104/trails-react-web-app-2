@@ -56,17 +56,23 @@ export const findUsersByRole = async (role) => {
   return response.data;
 };
 
-export const findFavouritesByUserId = async (id) => {
-  const response = await request.get(`${USERS_API}/${id}/favourites`);
+export const findfavoritesByUserId = async (id) => {
+  const response = await request.get(`${USERS_API}/${id}/favorites`);
   return response.data;
 };
 
-export const addToFavourites = async (userId, trail) => {
-  const response = await request.put(
-    `${USERS_API}/${userId}/favourites/${trail.id}`,
-    trail
-  );
-  return response.data;
+export const addTofavorites = async (user, trail) => {
+  try{ 
+    const response = await request.put(
+      `${USERS_API}/favorites/${user._id}/`,
+      {user: user, trail: trail}
+    );
+    return response.data;
+  } catch (err) {
+    alert('cannot add to favorites')
+  }
+  
+  
 };
 
 export const findAllTrails = async () => {
