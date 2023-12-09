@@ -6,6 +6,8 @@ import Details from './Details/Details';
 import Home from './Home';
 import Search from "./Search/search";
 import NewHome from "./Home/index.js";
+import Signin from "./Users/signin.js";
+import Signup from "./Users/signup.js";
 
 function Trails() {
   return (
@@ -14,11 +16,13 @@ function Trails() {
       <div className="container-fluid">
         <Routes>
         {/* <Route path="/" element={<Navigate to="home" />} /> */}
-        <Route path="/" element={<Navigate to="newHome" />} />
-        <Route path="newHome" element={<NewHome/>} />
+        <Route path="/" element={<Navigate to="home" />} />
+        <Route path="home" element={<NewHome/>} />
           {/* <Route path="home" element={<Home/>}/> */}
           <Route path="details/:trailId" element={<Details/>}/>
           <Route path="search" element={ <Search/>} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
     </HashRouter>
