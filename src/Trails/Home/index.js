@@ -2,66 +2,60 @@ import { React, useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navigation from "../Navigation";
 import Footer from "../Navigation/footer.js";
-// import * as client from "../Users/client.js";
-import * as client from "../Search/client.js"
+import * as UserClient from "../Users/client.js";
+import * as TrailClient from "../Search/client.js"
 import "./index.css";
 
 function NewHome() {
-  const { id } = useParams();
+  // const { id } = useParams();
   const navigate = useNavigate();
 
   const [trails, setTrails] = useState([]); // trails displayed on home
-  const [favourites, setFavourites] = useState([]); // users favourited trails
-  const [account, setAccount] = useState({
-    _id: null,
-    username: "",
-    passowrd: "",
-    role: "REGULAR",
-  });
+  const [favorites, setfavorites] = useState([]); // users favorited trails
+  const [account, setAccount] = useState({});
 
-  // const fetchFavourites = async (id) => {
-  //   const favs = await client.findFavouritesByUserId(id);
-  //   console.log("favs: " + favs);
-  //   setFavourites(favs);
-  //   // setTrails(favs);
-  // };
+  const fetchfavorites = async (id) => {
+    const favs = await UserClient.findfavoritesByUserId(account._id);
+    console.log("favs: " + favs);
+    setfavorites(favs);
+    // setTrails(favs);
+  };
 
-  // add a given trail to favourites
-  // const saveToFavourites = async (userId, trail) => {
-  //   await client.addToFavourites(userId, trail);
-  //   setFavourites([...favourites, trail]);
-  //   alert("Added trail to favourite!");
-  // };
+  // add a given trail to favorites
+  const saveToFavorites = async (trail) => {
+    await UserClient.addTofavorites(account, trail);
+    setfavorites([...favorites, trail]);
+    alert("Added trail to favorite!");
+  };
 
   const fetchAllTrails = async () => {
-    const fetchedTrails = await client.findAllTrails();
+    const fetchedTrails = await TrailClient.findAllTrails();
     setTrails(fetchedTrails.data);
   };
 
-  // const fetchAccount = async (id) => {
-  //   try {
-  //     if (id) {
-  //       const account = await client.findUserById(id);
-  //       setAccount(account);
-  //     } else {
-  //       const account = await client.account();
-  //       setAccount(account);
-  //     }
-  //   } catch (err) {
-  //     navigate("/signin");
-  //   }
-  // };
+  const fetchAccount = async () => {
+    try {
+      const account = await UserClient.account();
+
+      setAccount(account);
+      setfavorites(account.favorites)
+      console.log(`account: ${account}`)
+    } catch (err) {
+      console.log(err.response.data.message)
+      navigate("/signin");
+    }
+  };
 
   // const addTrail = async () => {
   //   navigate(`/addTrail/${id}`);
-  //   fetchFavourites(id); // re-fetch all favourites
-  //   setTrails([...favourites, ...trails]);
+  //   fetchfavorites(id); // re-fetch all favorites
+  //   setTrails([...favorites, ...trails]);
   // };
 
   useEffect(() => {
-    // fetchAccount(id);
+    fetchAccount();
     fetchAllTrails();
-    // fetchFavourites(id);
+    // fetchfavorites(id);
   }, []);
 
   return (
@@ -82,9 +76,10 @@ function NewHome() {
         </div>
       </div>
 
-      {/* Local favourite trails */}
+      {/* Local favorite
+       trails */}
       <div className="container-fluid p-3">
-        <h3>Local Favourites</h3>
+        <h3>Local Favorites</h3>
 
         {/* able to add a trail if admin */}
         {account.role === "ADMIN" && (
@@ -114,23 +109,24 @@ function NewHome() {
                 <p className="fw-light fst-italic">Rating: {trail.rating}</p>
 
                 <div className="row justify-content-around">
-                  {/* able to add to favourite if logged in */}
-                  {id && (
+                  {/* able to add to favorite
+                   if logged in */}
+                  {account._id && (
                     <Link
                       className="btn btn-warning"
                       style={{ width: "150px" }}
-                      // onClick={() => {
-                      //   saveToFavourites(id, trail); // save trail to favs
-                      // }}
+                      onClick={() => {
+                        saveToFavorites(trail); // save trail to favs
+                      }}
                     >
-                      Save to favourite
+                      Save to favorite
                     </Link>
                   )}
 
                   {/* able to edit a trail if admin */}
                   {account.role === "ADMIN" && (
                     <Link
-                      to={`/editTrail/${id}/${trail.id}`}
+                      // to={`/editTrail/${id}/${trail.id}`}
                       className="btn btn-primary"
                       style={{ width: "100px" }}
                     >
