@@ -9,40 +9,45 @@ import { FaCar, FaLocationDot } from "react-icons/fa6";
 import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
 import * as client from "../Search/client"
+import * as UserClient from "../Users/client"
  
 import AltImg from "./DefaultImg.png"
 
-function Details() {
+function Details({key}) {
   const { trailId } = useParams();
   const trails = useSelector((state) => state.trailsReducer.trails)
-  const [trail, setTrail] = useState({})
-  const [tags, setTags] = useState({})
-  // console.log(trailId)
-  // console.log(trails)
-  // console.log("finding trail")
-  const getTrail = async (trailId) => {
-    const t = await client.findTrailByID(trailId)
-    setTrail(t.data[0])
-    // const [t] = 
-    // console.log("finding trail");
-    // console.log(trails.filter((trail) => trail._id === trailId))
-    console.log(`trail: ${JSON.stringify(t)}`)
-    // console.log(`trail: ${t.data}`)
-    console.log(`trail1: ${JSON.stringify(trail)}`)
-    console.log(`trail1: ${trail.name}`)
+  const [trail, setTrail] = useState()
+  const [account, setAccount] = useState({})
+  const [favorites, setFavorites] = useState([])
+  const [isFavorite, setIsFavorite] = useState(false)
 
-  }
+  const fetchAccount = async () => {
+    try {
+      const user = await UserClient.account();
+
+      setAccount(user);
+      setFavorites(user.favorites)
+      console.log(`in fetch Account`)
+      console.log(trailId)
+      if (user.favorites.filter(t => t.id === Number(trailId)).length > 0) {
+        console.log('this is favorited')
+        setIsFavorite(true)
+      }
+      console.log(account)
+    } catch (err) {
+      console.log(err.response.data.message)
+    }
+  };
 
   const stars = (rating) => {
     let s = []
     for (let i = 0; i < 5; i++) {
-      s.push(<FaRegStar className="text-warning mb-1" />)
+      s.push(<FaRegStar key={i} className="text-warning mb-1" />)
     }
     let x = 0
     for (x = 0; x < rating - 1; x++) {
-      s[x] = <FaStar className="text-warning mb-1" />
+      s[x] = <FaStar key={x} className="text-warning mb-1" />
     }
-    console.log(x)
     let rem = rating - x
     if (rem >= 0.8) {
       s[x] = <FaStar className="text-warning mb-1" />
@@ -54,49 +59,24 @@ function Details() {
     return s;
   }
 
-  const findTrailById = (trailId) => {
-    // const [t] = 
-    // console.log("finding trail");
-    // console.log(trails.filter((trail) => trail._id === trailId))
-    setTrail(trails.filter((trail) => trail._id == trailId)[0])
-    setTags(trail.tags)
-    console.log(`trail: ${JSON.stringify(trail)}`)
-    console.log(`trail tags: ${trail.tags}`)
-    console.log(`tags: ${tags}`)
-    console.log(JSON.stringify(tags))
 
-  }
-
-  useEffect(() => {
-    // findTrailById(trailId)
-    getTrail(trailId)
-  }, [trailId])
-
-  // console.log(trail)
-  // console.log(trail.length)
-  console.log(stars(3.5))
-  const imgRef = useRef();
-  return (
-    <div className="container-fluid">
+  const DetailsPage = () => {
+    return (
+      <div className="container-fluid">
       <div className="d-flex justify-content-center">
         <div className="card mt-4 details shadow rounded align-middle">
-        <img style={{ "object-fit": "cover", 'object-position': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }}
+        <img style={{ "objectFit": "cover", 'objectPosition': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }}
           src={trail.thumbnail || AltImg}
-          // ref={imgRef()}
-          // onError={this.img.src=AltImg}
           className="card-img-top" 
           alt="Not Found"
         ></img>
-          {/* {trail.thumbnail? 
-            // <img style={{ "object-fit": "cover", 'object-position': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }} className="card-img-top" src={trail.thumbnail} alt='../Resources/DefaultImg.png'></img>
-            // :<img style={{ "object-fit": "cover", 'object-position': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }} className="card-img-top" src={trail.thumbnail} alt="Card Image cap"></img>
-          } */}
           {/* IMAGE OVERLAY */}
           <div className="card-img-overlay h-50 d-flex flex-column  justify-content-start">
             <div className="d-flex">
               <h3 className="card-title text-light me-auto display-1 justify-content-end">{trail.name}</h3>
-              {/* <PiHeart className="text-light" onClick={() => {alert('hi')}} size={50} /> */}
-              <button className="m-0 p-0" onClick={() => { alert('hi') }} style={{ 'border': 'none', 'background': 'none' }}><PiHeart className="text-light" size={50} /> </button>
+              <button className="m-0 p-0" onClick={() => { alert('hi') }} style={{ 'border': 'none', 'background': 'none' }}>
+                {isFavorite? <PiHeartFill className="text-danger" size={50}/> : <PiHeart className="text-light" size={50}/>}
+              </button>
             </div>
             <div className="flex-fill">
 
@@ -141,25 +121,39 @@ function Details() {
               <div className="d-flex flex-wrap">
               </div>
             </div>
-            {/* <div className="d-flex">
-              <h3 className="card-title text-light me-auto display-1">{trail.name}</h3>
-              
-            </div>
-            <div className="flex-fill">
-              <p className="text-light h6">{trail.difficulty} {trail.rating}</p>
-              <FaCamera className="text-light" size={50} />
-              <FaCar className="text-light" size={50} />
-              <div className="info align-bottom" style={{ 'background-color': 'rgba(0,0,0,0.5)' }}>
-                hello
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
     </div>
 
+    )
+  }
+
+  useEffect(() => {
+    UserClient.account().then(user => {
+      setAccount(user);
+      setFavorites(user.favorites)
+      console.log(`in fetch Account`)
+      console.log(trailId)
+      if (user.favorites.filter(t => t.id === Number(trailId)).length > 0) {
+        console.log('this is favorited')
+        setIsFavorite(true)
+      }
+      console.log(account)
+    })
+
+    client.findTrailByID(trailId).then(t => {
+      setTrail(t)
+    })
+    console.log(`stored trail: ${trail}`)
+  }, [isFavorite])
+ 
+  return (
+    <div>{trail? DetailsPage() : <div>Still Loading</div>}</div>
+    
 
   )
 }
+
 
 export default Details;
