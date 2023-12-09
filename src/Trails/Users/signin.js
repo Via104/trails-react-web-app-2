@@ -18,7 +18,8 @@ function Signin() {
         alert("Username and password cannot be empty!");
       } else {
         const currentUser = await client.signin(user);
-        navigate("/home/" + currentUser._id);
+        console.log(currentUser)
+        navigate('/home');
       }
     } catch (err) {
       setError(err.response.data.message);
