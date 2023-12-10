@@ -9,7 +9,6 @@ function Navigation() {
   const links = [
     { to: id ? `/home/${id}` : "/home", label: "Home" },
     { to: id ? `/community/${id}` : "/community", label: "Community" },
-    // { to: id ? `/favourites/${id}` : "/favourites", label: "Favourites" },
   ];
   const linksAtEnd = [
     { to: id ? `/profile/${id}` : "/profile", label: "Profile" },
@@ -19,7 +18,7 @@ function Navigation() {
 
   const signout = async () => {
     await client.signout();
-    navigate("/signin");
+    navigate("/home");
   };
   return (
     <div className="d-flex justify-content-between p-2">

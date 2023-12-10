@@ -18,25 +18,35 @@ function Home() {
     role: "REGULAR",
   });
 
-  const fetchFavourites = async (id) => {
-    const favs = await client.findFavouritesByUserId(id);
-    console.log("favs: " + favs);
-    setFavourites(favs);
-  };
-
   // add a given trail to favourites
-  const saveToFavourites = async (userId, trail) => {
-    console.log("saving to fav");
-    await client.addToFavourites(userId, trail); // update users collection
-    await client.addToFavouritesTrails(userId, trail); // update trails collection
+  // const saveToFavourites = async (userId, trail) => {
+  //   await client.addToFavourites(userId, trail); // update users collection
+  //   await client.addToFavouritesTrails(userId, trail); // update trails collection
 
-    setFavourites([...favourites, trail]);
-    alert("Added trail to favourite!");
+  //   setFavourites([...favourites, trail]);
+  //   alert("Added trail to favourite!");
+  // };
+
+  const fetchFavourites = async (id) => {
+    // fetch favs if signed in
+    if (id) {
+      const favs = await client.findFavouritesByUserId(id);
+      setFavourites(favs);
+    }
   };
 
   const fetchAllTrails = async () => {
     const fetchedTrails = await client.findAllTrails();
-    setTrails(fetchedTrails.data);
+    const idsInFavs = favourites.map((item) => item.id);
+    // trails that have not been marked as favourite
+    const notFavoredTrails = fetchedTrails.data.filter(
+      (item) => !idsInFavs.includes(item.id)
+    );
+    const customizedTrails = favourites.filter(
+      (item) => typeof item.id === "string"
+    );
+    // display user customized trails too
+    setTrails([...customizedTrails, ...notFavoredTrails]);
   };
 
   const fetchAccount = async (id) => {
@@ -53,23 +63,11 @@ function Home() {
     }
   };
 
-  const addTrail = async () => {
-    navigate(`/addTrail/${id}`);
-    fetchFavourites(id); // re-fetch all favourites
-    setTrails([...favourites, ...trails]); // add new trails to display
-  };
-
   useEffect(() => {
     fetchAccount(id);
+    fetchFavourites(id);
     fetchAllTrails();
-    // fetchFavourites(id);
-
-    const idsInFavs = new Set(favourites.map((item) => item.id));
-    // trails that have not been marked as favourite
-    const notFavoredTrails = trails.filter((item) => !idsInFavs.has(item.id));
-    console.log(favourites);
-    console.log(notFavoredTrails);
-  }, []);
+  }, [trails]);
 
   return (
     <div>
@@ -95,11 +93,15 @@ function Home() {
 
         {/* able to add a trail if admin */}
         {account.role === "ADMIN" && (
-          <button onClick={() => addTrail()} className="btn btn-success mb-3">
+          <button
+            onClick={() => navigate(`/addTrail/${id}`)}
+            className="btn btn-success mb-3"
+          >
             Add a trail
           </button>
         )}
 
+        {/* trail cards */}
         <div className="container bg-body-secondary">
           {trails.map((trail) => (
             <Link
@@ -117,38 +119,14 @@ function Home() {
                   Rating: {trail.rating}/5.00
                 </p>
 
-                <div className="row justify-content-around">
-                  {/* able to add to favourite if logged in */}
-                  {id && (
-                    <Link
-                      className="btn btn-warning"
-                      style={{ width: "150px" }}
-                      onClick={() => {
-                        saveToFavourites(id, trail); // save trail to favs
-                      }}
-                    >
-                      Save to favourite
-                    </Link>
-                  )}
-
-                  {/* able to edit a trail if admin */}
-                  {/* {account.role === "ADMIN" && (
-                    <Link
-                      to={`/editTrail/${id}/${trail.id}`}
-                      className="btn btn-primary"
-                      style={{ width: "100px" }}
-                    >
-                      Edit
-                    </Link>
-                  )} */}
-                </div>
+                <div className="row justify-content-around"></div>
               </div>
             </Link>
           ))}
         </div>
       </div>
 
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }
