@@ -1,11 +1,11 @@
 import axios from "axios";
+
 // export const USERS_API = process.env.REACT_APP_API_URL;
 export const USERS_API = "http://localhost:4000/api/users";
 export const TRAILS_API = "http://localhost:4000/api/trails";
 
 export const signin = async (user) => {
   const response = await axios.post(`${USERS_API}/signin`, user);
-  console.log(response.data);
   return response.data;
 };
 
@@ -21,7 +21,6 @@ export const updateUser = async (user) => {
 
 export const users = async () => {
   const response = await axios.get(`${USERS_API}`);
-  console.log("here");
   return response.data;
 };
 
@@ -68,6 +67,39 @@ export const addToFavourites = async (userId, trail) => {
   return response.data;
 };
 
+//  create a trail object in db
+export const createTrail = async (trail, userId) => {
+  try {
+    const response = await axios.post(`${TRAILS_API}/create`, {
+      trailId: trail.id,
+      name: trail.name,
+      url: trail.url,
+      length: trail.length,
+      description: trail.description,
+      userId: userId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating trail:", error);
+    throw error; // Re-throw the error for handling at a higher level if needed
+  }
+};
+
+// get all users who favored this trail
+export const getFavUsers = async (trailId) => {
+  const response = await axios.get(`${TRAILS_API}/${trailId}/users`);
+  return response.data;
+};
+
+// update list of users associated with this trail
+export const addToFavouritesTrails = async (userId, trail) => {
+  await createTrail(trail, userId); // first create trail in db (with the current user id)
+  const userIds = await getFavUsers(trail.id); // get list of users associated with the given trail
+  const newUsers = [...userIds, userId]; // update users list
+  const response = await axios.put(`${TRAILS_API}/${trail.id}/users`, newUsers);
+  return response.data;
+};
+
 export const findAllTrails = async () => {
   const options = {
     method: "GET",
@@ -83,7 +115,6 @@ export const findAllTrails = async () => {
   };
   try {
     const response = await axios.request(options);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -100,14 +131,18 @@ export const findTrailByID = async (searchID) => {
       "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
     },
   };
-
   const response = await axios.request(options);
-  console.log(response.data);
-
   return response.data;
 };
 
+// update a trail info in trails collection
 export const updateTrail = async (trail) => {
   const response = await axios.put(`${TRAILS_API}/${trail.id}`, trail);
+  return response.data;
+};
+
+// update a trail in user's favourites
+export const updateTrailUser = async (userId, trail) => {
+  const response = await axios.put(`${USERS_API}/${userId}/${trail.id}`, trail);
   return response.data;
 };

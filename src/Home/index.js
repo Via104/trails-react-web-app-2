@@ -22,12 +22,14 @@ function Home() {
     const favs = await client.findFavouritesByUserId(id);
     console.log("favs: " + favs);
     setFavourites(favs);
-    // setTrails(favs);
   };
 
   // add a given trail to favourites
   const saveToFavourites = async (userId, trail) => {
-    await client.addToFavourites(userId, trail);
+    console.log("saving to fav");
+    await client.addToFavourites(userId, trail); // update users collection
+    await client.addToFavouritesTrails(userId, trail); // update trails collection
+
     setFavourites([...favourites, trail]);
     alert("Added trail to favourite!");
   };
@@ -54,13 +56,19 @@ function Home() {
   const addTrail = async () => {
     navigate(`/addTrail/${id}`);
     fetchFavourites(id); // re-fetch all favourites
-    setTrails([...favourites, ...trails]);
+    setTrails([...favourites, ...trails]); // add new trails to display
   };
 
   useEffect(() => {
     fetchAccount(id);
     fetchAllTrails();
     // fetchFavourites(id);
+
+    const idsInFavs = new Set(favourites.map((item) => item.id));
+    // trails that have not been marked as favourite
+    const notFavoredTrails = trails.filter((item) => !idsInFavs.has(item.id));
+    console.log(favourites);
+    console.log(notFavoredTrails);
   }, []);
 
   return (
@@ -87,11 +95,7 @@ function Home() {
 
         {/* able to add a trail if admin */}
         {account.role === "ADMIN" && (
-          <button
-            onClick={() => addTrail()}
-            // to={`/addTrail/${id}`}
-            className="btn btn-success mb-3"
-          >
+          <button onClick={() => addTrail()} className="btn btn-success mb-3">
             Add a trail
           </button>
         )}
@@ -104,13 +108,14 @@ function Home() {
               style={{ textDecoration: "none" }}
             >
               <div className="card" id={trail.id}>
-                {/* <img src="..." className="card-img-top" alt="..."></img> */}
                 <p className="fs-6 fw-bold">{trail.name}</p>
                 <p className="fs-6 fw-lighter text-wrapper">
                   {trail.description}
                 </p>
                 <p>Length: {trail.length} miles</p>
-                <p className="fw-light fst-italic">Rating: {trail.rating}</p>
+                <p className="fw-light fst-italic">
+                  Rating: {trail.rating}/5.00
+                </p>
 
                 <div className="row justify-content-around">
                   {/* able to add to favourite if logged in */}
@@ -127,7 +132,7 @@ function Home() {
                   )}
 
                   {/* able to edit a trail if admin */}
-                  {account.role === "ADMIN" && (
+                  {/* {account.role === "ADMIN" && (
                     <Link
                       to={`/editTrail/${id}/${trail.id}`}
                       className="btn btn-primary"
@@ -135,7 +140,7 @@ function Home() {
                     >
                       Edit
                     </Link>
-                  )}
+                  )} */}
                 </div>
               </div>
             </Link>

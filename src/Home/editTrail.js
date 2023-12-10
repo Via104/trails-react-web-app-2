@@ -19,7 +19,6 @@ function EditTrail() {
   const currentTrail = async () => {
     const curr = await client.findTrailByID(trailId);
     setTrail(curr.data[0]);
-    console.log(trail);
   };
 
   useEffect(() => {
@@ -72,9 +71,11 @@ function EditTrail() {
           className="btn btn-success mt-3 w-25"
           onClick={() => {
             // need to add trail to favourite before editing
-            client.addToFavourites(id, trailId);
+            client.addToFavourites(id, trail);
             // update trail
             client.updateTrail(trail);
+            // update trail info in users favourites
+            client.updateTrailUser(id, trail);
             alert("Trail details saved!");
           }}
         >
