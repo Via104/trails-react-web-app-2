@@ -18,15 +18,6 @@ function Home() {
     role: "REGULAR",
   });
 
-  // add a given trail to favourites
-  // const saveToFavourites = async (userId, trail) => {
-  //   await client.addToFavourites(userId, trail); // update users collection
-  //   await client.addToFavouritesTrails(userId, trail); // update trails collection
-
-  //   setFavourites([...favourites, trail]);
-  //   alert("Added trail to favourite!");
-  // };
-
   const fetchFavourites = async (id) => {
     // fetch favs if signed in
     if (id) {
@@ -42,10 +33,7 @@ function Home() {
     const notFavoredTrails = fetchedTrails.data.filter(
       (item) => !idsInFavs.includes(item.id)
     );
-    const customizedTrails = favourites.filter(
-      (item) => typeof item.id === "string"
-    );
-    // display user customized trails too
+    const customizedTrails = await client.findAllCustomizedTrails();
     setTrails([...customizedTrails, ...notFavoredTrails]);
   };
 

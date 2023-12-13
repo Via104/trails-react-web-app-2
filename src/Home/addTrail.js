@@ -29,9 +29,7 @@ function AddTrail() {
     ) {
       alert("Please fill in all fields.");
     } else {
-      // add new trail to favourites
-      await client.addToFavourites(id, trail); // update users collection
-      await client.addToFavouritesTrails(id, trail); // update trails collection
+      await client.addTrail(trail);
       alert("Trail added successfully!");
       navigate(`/home/${id}`, { replace: true });
     }
