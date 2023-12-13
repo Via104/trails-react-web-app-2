@@ -12,7 +12,7 @@ function Navigation() {
     // { to: id ? `/favourites/${id}` : "/favourites", label: "Favourites" },
   ];
   const linksAtEnd = [
-    { to: id ? `/profile/${id}` : "/profile", label: "Profile" },
+    { to: id ? `/profile` : "/profile", label: "Profile" },
   ];
   const active = (path) => (pathname.includes(path) ? "active" : "");
   const { pathname } = useLocation();

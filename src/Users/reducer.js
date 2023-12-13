@@ -10,10 +10,16 @@ const userSlice = createSlice({
   reducers: {
     setCurrentUser(state, action) {
       state.currentUser = action.payload;
+      console.log("Current User:" );
       console.log(state.currentUser);
+    },
+    setViewedUser(state, action) {
+      state.viewedUser = action.payload;
+      console.log("Viewed User:" );
+      console.log(state.viewedUserUser);
     },
   },
 });
 
-export const { setCurrentUser } = userSlice.actions;
+export const { setCurrentUser,setViewedUser } = userSlice.actions;
 export default userSlice.reducer;
