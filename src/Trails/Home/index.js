@@ -1,5 +1,9 @@
 import { React, useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setAccount
+} from "../store/accountReducer";
 import Navigation from "../Navigation";
 import Footer from "../Navigation/footer.js";
 import * as UserClient from "../Users/client.js";
@@ -12,7 +16,10 @@ function NewHome() {
 
   const [trails, setTrails] = useState([]); // trails displayed on home
   const [favorites, setfavorites] = useState([]); // users favorited trails
-  const [account, setAccount] = useState({});
+  // const [account, setAccount] = useState({});
+  const account = useSelector((state) => state.accountReducer.account)
+  const dispatch = useDispatch();
+
 
   const fetchfavorites = async (id) => {
     const favs = await UserClient.findfavoritesByUserId(account._id);
@@ -23,8 +30,10 @@ function NewHome() {
 
   // add a given trail to favorites
   const saveToFavorites = async (trail) => {
-    await UserClient.addTofavorites(account, trail);
+    const updatedUser = await UserClient.addToFavorites(account, trail);
     setfavorites([...favorites, trail]);
+    console.log(`updated user: ${updatedUser}`)
+    dispatch(setAccount(updatedUser))
     alert("Added trail to favorite!");
   };
 
@@ -53,7 +62,7 @@ function NewHome() {
   // };
 
   useEffect(() => {
-    fetchAccount();
+    // fetchAccount();
     fetchAllTrails();
     // fetchfavorites(id);
   }, []);

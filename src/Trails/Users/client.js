@@ -61,15 +61,45 @@ export const findfavoritesByUserId = async (id) => {
   return response.data;
 };
 
-export const addTofavorites = async (user, trail) => {
+export const addToFavorites = async (user, trail) => {
+  if(user.favorites && user.favorites.filter((fav) => fav.id === Number(trail.id)).length === 0) {
+    const favs = [...user.favorites, trail];
+    try { 
+      console.log(user)
+      console.log(trail)
+      const response = await request.put(
+        `${USERS_API}/favorites/${user._id}/`,
+        {user: user, favs: favs}
+      );
+      return response.data;
+    } catch (err) {
+      console.log(err)
+      alert('cannot add to favorites')
+    }
+  }else {
+    alert('already in favs')
+    console.log(`favs length: ${user.favorites.length}`)
+    return user
+  } 
+};
+
+export const removeFromFavorites = async (user, trail) => {
   try{ 
-    const response = await request.put(
-      `${USERS_API}/favorites/${user._id}/`,
-      {user: user, trail: trail}
-    );
-    return response.data;
+    console.log("in removeFromFavorites")
+    console.log(user)
+    console.log(trail)
+    if (user.favorites) {
+      const favs = user.favorites.filter((fav) => fav.id !== Number(trail.id));
+      const response = await request.put(
+        `${USERS_API}/favorites/${user._id}/`,
+        {user: user, favs: favs}
+      );
+      return response.data;
+    }
+    return user
   } catch (err) {
-    alert('cannot add to favorites')
+    console.log(err)
+    alert('cannot remove from favorites')
   }
   
   

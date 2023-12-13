@@ -8,6 +8,7 @@ import Search from "./Search/search";
 import NewHome from "./Home/index.js";
 import Signin from "./Users/signin.js";
 import Signup from "./Users/signup.js";
+import Navigation from "./Navigation/index.js";
 
 function Trails() {
   return (
@@ -19,10 +20,11 @@ function Trails() {
         <Route path="/" element={<Navigate to="home" />} />
         <Route path="home" element={<NewHome/>} />
           {/* <Route path="home" element={<Home/>}/> */}
-          <Route path="details/:trailId" element={<Details/>}/>
+          <Route path="details/:trailId" element={<Details key ={new Date()}/>}/>
           <Route path="search" element={ <Search/>} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/navigation" element={<Navigation />} />
         </Routes>
       </div>
     </HashRouter>

@@ -1,26 +1,46 @@
-import React from "react";
+import React, { useEffect, useState} from "react";
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
-// import * as client from "../Users/client";
+import * as client from "../Users/client";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setAccount
+} from "../store/accountReducer";
 
 function Navigation() {
   const { id } = useParams();
-  const navigate = useNavigate();
-
+  const { pathname } = useLocation();
+  // const navigate = useNavigate();
+  const active = (path) => (pathname.includes(path) ? "active" : "");
+  const account = useSelector((state) => state.accountReducer.account)
+  const dispatch = useDispatch();
   const links = [
-    { to: id ? `/home/${id}` : "/home", label: "Home" },
-    { to: id ? `/community/${id}` : "/community", label: "Community" },
+    { to: "/home", label: "Home" },
+    { to: "/community", label: "Community" },
     // { to: id ? `/favourites/${id}` : "/favourites", label: "Favourites" },
   ];
   const linksAtEnd = [
-    { to: id ? `/profile/${id}` : "/profile", label: "Profile" },
+    { to: "/profile", label: "Profile" },
   ];
-  const active = (path) => (pathname.includes(path) ? "active" : "");
-  const { pathname } = useLocation();
+  
+  console.log(`id ${id}`)
+  
+  useEffect(() => {
+    try {
+      client.account().then(user => {
+        dispatch(setAccount(user))
+      })
+    } catch (err) {
+      console.log(`Navigation: you are not signed in`)
+    }
+    
+  }, [])
 
-  // const signout = async () => {
-  //   await client.signout();
-  //   navigate("/signin");
-  // };
+  const signout = async () => {
+    await client.signout();
+    dispatch(setAccount({}))
+    // navigate("/signin");
+  };
+
   return (
     <div className="d-flex justify-content-between p-2">
       <div className="align-middle">
@@ -47,22 +67,21 @@ function Navigation() {
           </Link>
         ))}
         {/* shows sign in button if not logged in */}
-        {!id && (
+        {account._id? <button className="btn bg-success text-white" onClick={() => {signout()}}>Sign out</button> :
           <Link
             key={"/signin"}
             to={"/signin"}
-            className="btn bg-success text-white"
-          >
+            className="btn bg-success text-white">
             Sign In
           </Link>
-        )}
-        {id && (
+        }
+        {/* {id && (
           <Link 
             // onClick={signout}
             className="btn bg-secondary text-white">
             Sign Out
           </Link>
-        )}
+        )} */}
       </div>
     </div>
   );

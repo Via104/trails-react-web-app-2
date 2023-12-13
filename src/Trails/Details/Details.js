@@ -8,35 +8,63 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { FaCar, FaLocationDot } from "react-icons/fa6";
 import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
-import * as client from "../Search/client"
+import * as TrailsClient from "../Search/client"
 import * as UserClient from "../Users/client"
- 
 import AltImg from "./DefaultImg.png"
 
 function Details({key}) {
   const { trailId } = useParams();
-  const trails = useSelector((state) => state.trailsReducer.trails)
+  // const account = useSelector((state) => state.accountReducer.account)
   const [trail, setTrail] = useState()
-  const [account, setAccount] = useState({})
+  // const [account, setAccount] = useState({})
   const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
+  const [account, setAccount] = useState({})
+  const dispatch = useDispatch()
+  console.log(`details: ${JSON.stringify(account)}`)
 
-  const fetchAccount = async () => {
+  useEffect(() => {
     try {
-      const user = await UserClient.account();
-
-      setAccount(user);
-      setFavorites(user.favorites)
-      console.log(`in fetch Account`)
-      console.log(trailId)
-      if (user.favorites.filter(t => t.id === Number(trailId)).length > 0) {
-        console.log('this is favorited')
-        setIsFavorite(true)
-      }
-      console.log(account)
+      UserClient.account().then(user => {
+        // dispatch(setAccount(user));
+        setAccount(user)
+        // setFavorites(user.favorites)
+        console.log(`in fetch Account`)
+        // console.log(trailId)
+        // console.log(user.favorites)
+        if (user.favorites && user.favorites.filter(t => t.id === Number(trailId)).length > 0) {
+          console.log('this is favorited')
+          setIsFavorite(true)
+        }
+        console.log(account)
+      })
     } catch (err) {
-      console.log(err.response.data.message)
+      console.log('You are not signed in')
     }
+    
+    TrailsClient.findTrailByID(trailId).then(t => {
+      setTrail(t)
+    })
+    console.log(`stored trail: ${trail}`)
+  }, [isFavorite])
+
+
+  const saveToFavorites = async (trail) => {
+    const updatedUser = await UserClient.addToFavorites(account, trail);
+    console.log(updatedUser)
+    setAccount(updatedUser)
+    setIsFavorite(true)
+    // dispatch(setAccount(updatedUser))
+    alert("Added trail to favorite!");
+  };
+
+  const removeFromFavorites = async (trail) => {
+    const updatedUser = await UserClient.removeFromFavorites(account, trail);
+    console.log(updatedUser)
+    setAccount(updatedUser)
+    setIsFavorite(false)
+    // dispatch(setAccount(updatedUser))
+    alert("removed from favorites!");
   };
 
   const stars = (rating) => {
@@ -55,7 +83,6 @@ function Details({key}) {
     else if (rem >= 0.3) {
       s[x] = <FaStarHalfAlt className="text-warning mb-1" />
     }
-
     return s;
   }
 
@@ -74,9 +101,10 @@ function Details({key}) {
           <div className="card-img-overlay h-50 d-flex flex-column  justify-content-start">
             <div className="d-flex">
               <h3 className="card-title text-light me-auto display-1 justify-content-end">{trail.name}</h3>
-              <button className="m-0 p-0" onClick={() => { alert('hi') }} style={{ 'border': 'none', 'background': 'none' }}>
-                {isFavorite? <PiHeartFill className="text-danger" size={50}/> : <PiHeart className="text-light" size={50}/>}
-              </button>
+              {isFavorite? <PiHeartFill onClick={() => {removeFromFavorites(trail)}} style={{ 'border': 'none', 'background': 'none' }} className=" btn text-danger" size={100}/> : <PiHeart onClick={() => {saveToFavorites(trail)}} style={{ 'border': 'none', 'background': 'none' }} className="btn text-light" size={100}/>}
+              {/* <button className="m-0 p-0" onClick={() => { alert('hi'); saveToFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }}>
+                {isFavorite? <PiHeartFill className=" btn text-danger" size={50}/> : <PiHeart className="text-light" size={50}/>}
+              </button> */}
             </div>
             <div className="flex-fill">
 
@@ -129,29 +157,8 @@ function Details({key}) {
     )
   }
 
-  useEffect(() => {
-    UserClient.account().then(user => {
-      setAccount(user);
-      setFavorites(user.favorites)
-      console.log(`in fetch Account`)
-      console.log(trailId)
-      if (user.favorites.filter(t => t.id === Number(trailId)).length > 0) {
-        console.log('this is favorited')
-        setIsFavorite(true)
-      }
-      console.log(account)
-    })
-
-    client.findTrailByID(trailId).then(t => {
-      setTrail(t)
-    })
-    console.log(`stored trail: ${trail}`)
-  }, [isFavorite])
- 
   return (
     <div>{trail? DetailsPage() : <div>Still Loading</div>}</div>
-    
-
   )
 }
 
