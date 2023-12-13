@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Signin() {
+  
+  const [currentUser, setCurrentUser] = useState(null);
   const [error, setError] = useState("");
   const [user, setUser] = useState({
     _id: null,
@@ -18,9 +20,12 @@ function Signin() {
         alert("Username and password cannot be empty!");
       } else {
         const currentUser = await client.signin(user);
+        console.log(currentUser);
+        setCurrentUser(currentUser);
         navigate("/home/" + currentUser._id);
       }
     } catch (err) {
+      console.log(err);
       setError(err.response.data.message);
     }
   };

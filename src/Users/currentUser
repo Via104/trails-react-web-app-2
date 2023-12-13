@@ -1,0 +1,42 @@
+import {useDispatch, useSelector} from "react-redux";
+import React, {useEffect, useState} from "react";
+import {profileThunk} from "../../services/user-thunk";
+import * as client from "../Users/client.js";
+import * as reducer from "../Users/reducer";
+
+const CurrentUser = ({children}) => {
+    const [isLoading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState(null);
+    const dispatch = useDispatch();
+
+    const fetchCurrentUser = async () => {
+        try {
+          const currentUser = await client.account();
+          console.log("Profile" + currentUser);
+          setCurrentUser(currentUser);
+          console.log("setstate complete - dispatch next")
+          dispatch(reducer.setCurrentUser(currentUser));
+        } catch (error) {
+          console.log("Current user was not found")
+          //navigate("/signin");
+        }
+      };
+      useEffect(() => {
+        fetchCurrentUser();
+      }, []);
+    useEffect(() => {
+        dispatch(profileThunk()).then(
+            ()=>{
+                setLoading(false);
+            }
+        )
+    },[])
+    if (isLoading) {
+        return null;
+    }
+    else {
+       return (children);
+    }
+
+}
+export default CurrentUser;
