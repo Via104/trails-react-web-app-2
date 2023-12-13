@@ -9,6 +9,7 @@ import NewHome from "./Home/index.js";
 import Signin from "./Users/signin.js";
 import Signup from "./Users/signup.js";
 import Navigation from "./Navigation/index.js";
+import Community from "./Community/index.js";
 
 function Trails() {
   return (
@@ -25,6 +26,7 @@ function Trails() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/navigation" element={<Navigation />} />
+          <Route path="/community" element={<Community/>} />
         </Routes>
       </div>
     </HashRouter>

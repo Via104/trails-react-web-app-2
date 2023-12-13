@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as LikesClient from "../Likes/client"
 const request = axios.create({withCredentials: true,})
 // export const USERS_API = process.env.REACT_APP_API_URL;
 export const USERS_API = "http://localhost:4000/api/users";
@@ -71,6 +72,7 @@ export const addToFavorites = async (user, trail) => {
         `${USERS_API}/favorites/${user._id}/`,
         {user: user, favs: favs}
       );
+      await LikesClient.createUserLikesTrail(trail.id, trail.name, trail.description)
       return response.data;
     } catch (err) {
       console.log(err)
@@ -94,6 +96,7 @@ export const removeFromFavorites = async (user, trail) => {
         `${USERS_API}/favorites/${user._id}/`,
         {user: user, favs: favs}
       );
+      LikesClient.deleteUserLikesTrail(trail.id)
       return response.data;
     }
     return user

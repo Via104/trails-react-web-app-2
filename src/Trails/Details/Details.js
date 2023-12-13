@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate, useParams, json } from "react-router-dom";
-import { useParms, useLocation } from "react-router-dom"
+import { Routes, Route, Navigate, useParams, json, Link } from "react-router-dom";
+import { useParms, useLocation, useNavigate } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import './index.css';
@@ -10,9 +10,10 @@ import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
 import * as TrailsClient from "../Search/client"
 import * as UserClient from "../Users/client"
+import * as LikesClient from "../Likes/client"
 import AltImg from "./DefaultImg.png"
 
-function Details({key}) {
+function Details({ key }) {
   const { trailId } = useParams();
   // const account = useSelector((state) => state.accountReducer.account)
   const [trail, setTrail] = useState()
@@ -20,7 +21,9 @@ function Details({key}) {
   const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
   const [account, setAccount] = useState({})
+  const [likes, setLikes] = useState()
   const dispatch = useDispatch()
+  const navigate = useNavigate();
   console.log(`details: ${JSON.stringify(account)}`)
 
   useEffect(() => {
@@ -41,30 +44,46 @@ function Details({key}) {
     } catch (err) {
       console.log('You are not signed in')
     }
-    
+
     TrailsClient.findTrailByID(trailId).then(t => {
       setTrail(t)
     })
+    LikesClient.findUsersLikedTrail(trailId).then((r) => (
+      setLikes(r)
+    ));
     console.log(`stored trail: ${trail}`)
   }, [isFavorite])
 
 
   const saveToFavorites = async (trail) => {
-    const updatedUser = await UserClient.addToFavorites(account, trail);
-    console.log(updatedUser)
-    setAccount(updatedUser)
-    setIsFavorite(true)
-    // dispatch(setAccount(updatedUser))
-    alert("Added trail to favorite!");
+    if (!account._id) {
+      navigate("/signin")
+
+    }
+    else {
+      const updatedUser = await UserClient.addToFavorites(account, trail);
+      console.log(updatedUser)
+      setAccount(updatedUser)
+      setIsFavorite(true)
+      // dispatch(setAccount(updatedUser))
+      alert("Added trail to favorite!");
+    }
+
   };
 
   const removeFromFavorites = async (trail) => {
-    const updatedUser = await UserClient.removeFromFavorites(account, trail);
-    console.log(updatedUser)
-    setAccount(updatedUser)
-    setIsFavorite(false)
-    // dispatch(setAccount(updatedUser))
-    alert("removed from favorites!");
+    if (!account._id) {
+      navigate("/signin")
+
+    }
+    else {
+      const updatedUser = await UserClient.removeFromFavorites(account, trail);
+      console.log(updatedUser)
+      setAccount(updatedUser)
+      setIsFavorite(false)
+      // dispatch(setAccount(updatedUser))
+      alert("removed from favorites!");
+    }
   };
 
   const stars = (rating) => {
@@ -90,75 +109,87 @@ function Details({key}) {
   const DetailsPage = () => {
     return (
       <div className="container-fluid">
-      <div className="d-flex justify-content-center">
-        <div className="card mt-4 details shadow rounded align-middle">
-        <img style={{ "objectFit": "cover", 'objectPosition': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }}
-          src={trail.thumbnail || AltImg}
-          className="card-img-top" 
-          alt="Not Found"
-        ></img>
-          {/* IMAGE OVERLAY */}
-          <div className="card-img-overlay h-50 d-flex flex-column  justify-content-start">
-            <div className="d-flex">
-              <h3 className="card-title text-light me-auto display-1 justify-content-end">{trail.name}</h3>
-              {isFavorite? <PiHeartFill onClick={() => {removeFromFavorites(trail)}} style={{ 'border': 'none', 'background': 'none' }} className=" btn text-danger" size={100}/> : <PiHeart onClick={() => {saveToFavorites(trail)}} style={{ 'border': 'none', 'background': 'none' }} className="btn text-light" size={100}/>}
-              {/* <button className="m-0 p-0" onClick={() => { alert('hi'); saveToFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }}>
+        <div className="d-flex justify-content-center">
+          <div className="card mt-4 details shadow rounded align-middle">
+            <img style={{ "objectFit": "cover", 'objectPosition': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }}
+              src={trail.thumbnail || AltImg}
+              className="card-img-top"
+              alt="Not Found"
+            ></img>
+            {/* IMAGE OVERLAY */}
+            <div className="card-img-overlay h-50 d-flex flex-column  justify-content-start">
+              <div className="d-flex">
+                <h3 className="card-title text-light me-auto display-1 justify-content-end">{trail.name}</h3>
+                {isFavorite ? <PiHeartFill onClick={() => { removeFromFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }} className=" btn text-danger" size={100} /> : <PiHeart onClick={() => { saveToFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }} className="btn text-light" size={100} />}
+                {/* <button className="m-0 p-0" onClick={() => { alert('hi'); saveToFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }}>
                 {isFavorite? <PiHeartFill className=" btn text-danger" size={50}/> : <PiHeart className="text-light" size={50}/>}
               </button> */}
-            </div>
-            <div className="flex-fill">
-
-              <span className="text-light align-text-bottom m-0 display-7"><FaLocationDot className="me-1 mb-1" />{trail.city}, {trail.region}</span>
-            </div>
-          </div>
-          {/* TRAIL CONTENT */}
-          <div className="card-body h-75 d-flex flex-column text-dark">
-            <div className="flex-grow">
-              <div className="d-flex flex-row">
-                <div className="d-flex flex-column align-items-center col-4">
-                  <div className="text-dark justify-content-center fs-6 fw-normal">Rating</div>
-
-                  <b className="fw-bold">{stars(trail.rating).map((star) => star)}<span className="ms-1">{trail.rating}</span></b>
-                </div>
-                <div className="d-flex flex-column align-items-center col-4">
-                  <div className="text-dark justify-content-center">Length</div>
-                  <b>{trail.length} mi</b>
-                </div>
-                <div className="d-flex flex-column align-items-center col-4">
-                  <div className="text-dark justify-content-center">Difficulty</div>
-                  <b>{trail.difficulty}</b>
-                </div>
               </div>
-              {/* DESCRIPTION */}
-              <p className="display-6 fs-4 fw-normal">Description</p>
-              <hr />
-              <p className="ms-2 card-text me-2"> {trail.description}</p>
+              <div className="flex-fill">
 
-              {/* FEATURES */}
-              {trail.features && (
-                <div>
-                   <p className="display-6 fs-4 card-text fw-normal">Features</p>
-                   <hr />
-                   <p className="ms-2 card-text mb-3 me-2">{trail.features}</p>
-                </div>)}
-              <p className="display-6 fs-4 card-text fw-normal">Directions</p>
-              <hr />
+                <span className="text-light align-text-bottom m-0 display-7"><FaLocationDot className="me-1 mb-1" />{trail.city}, {trail.region}</span>
+              </div>
+            </div>
+            {/* TRAIL CONTENT */}
+            <div className="card-body h-75 d-flex flex-column text-dark">
+              <div className="flex-grow">
+                <div className="d-flex flex-row">
+                  <div className="d-flex flex-column align-items-center col-4">
+                    <div className="text-dark justify-content-center fs-6 fw-normal">Rating</div>
 
-              {/* DIRECTIONS */}
-              <p className="ms-2 card-text me-2">{trail.directions}</p>
-              <div className="d-flex flex-wrap">
+                    <b className="fw-bold">{stars(trail.rating).map((star) => star)}<span className="ms-1">{trail.rating}</span></b>
+                  </div>
+                  <div className="d-flex flex-column align-items-center col-4">
+                    <div className="text-dark justify-content-center">Length</div>
+                    <b>{trail.length} mi</b>
+                  </div>
+                  <div className="d-flex flex-column align-items-center col-4">
+                    <div className="text-dark justify-content-center">Difficulty</div>
+                    <b>{trail.difficulty}</b>
+                  </div>
+                </div>
+                {/* DESCRIPTION */}
+                <p className="display-6 fs-4 fw-normal">Description</p>
+                <hr />
+                <p className="ms-2 card-text me-2"> {trail.description}</p>
+
+                {/* FEATURES */}
+                {trail.features && (
+                  <div>
+                    <p className="display-6 fs-4 card-text fw-normal">Features</p>
+                    <hr />
+                    <p className="ms-2 card-text mb-3 me-2">{trail.features}</p>
+                  </div>)}
+                {/* DIRECTIONS */}
+                <p className="display-6 fs-4 card-text fw-normal">Directions</p>
+                <hr />
+                <p className="ms-2 card-text me-2">{trail.directions}</p>
+                <p className="display-6 fs-4 card-text fw-normal">Likes</p>
+                <hr />
+                <div className="overflow">
+                  {likes.map((l) => (
+                    <div className="">
+                      <Link
+                        to={`/profile/${l.user._id}`} //{trail.url}
+                        style={{ 'textDecoration': "none" }}>
+                        <p className="ms-2 card-text text-dark me-2"><PiHeartFill className="text-danger mb-1 me-1" />Liked by {l.user.username}</p>
+                      </Link>
+
+
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
     )
   }
 
   return (
-    <div>{trail? DetailsPage() : <div>Still Loading</div>}</div>
+    <div>{trail && likes ? DetailsPage() : <div>Still Loading</div>}</div>
   )
 }
 
