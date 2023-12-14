@@ -5,7 +5,6 @@ import { Navigate } from "react-router";
 
 import Home from "./Home";
 import AddTrail from "./Home/addTrail";
-import EditTrail from "./Home/editTrail";
 
 import Signin from "./Users/signin";
 import Signup from "./Users/signup";
@@ -20,7 +19,6 @@ function App() {
   return (
     <Provider store={store}>
       <HashRouter>
-        {/* <CurrentUser/> */}
         <div>
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
@@ -44,7 +42,6 @@ function App() {
         </div>
       </HashRouter>
     </Provider>
-    
   );
 }
 

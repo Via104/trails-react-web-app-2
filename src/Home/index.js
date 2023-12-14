@@ -19,22 +19,22 @@ function Home() {
   });
 
   const fetchFavourites = async (id) => {
-    const favs = await client.findFavouritesByUserId(id);
-    console.log("favs: " + favs);
-    setFavourites(favs);
-    // setTrails(favs);
-  };
-
-  // add a given trail to favourites
-  const saveToFavourites = async (userId, trail) => {
-    await client.addToFavourites(userId, trail);
-    setFavourites([...favourites, trail]);
-    alert("Added trail to favourite!");
+    // fetch favs if signed in
+    if (id) {
+      const favs = await client.findFavouritesByUserId(id);
+      setFavourites(favs);
+    }
   };
 
   const fetchAllTrails = async () => {
     const fetchedTrails = await client.findAllTrails();
-    setTrails(fetchedTrails.data);
+    const idsInFavs = favourites.map((item) => item.id);
+    // trails that have not been marked as favourite
+    const notFavoredTrails = fetchedTrails.data.filter(
+      (item) => !idsInFavs.includes(item.id)
+    );
+    const customizedTrails = await client.findAllCustomizedTrails();
+    setTrails([...customizedTrails, ...notFavoredTrails]);
   };
 
   const fetchAccount = async (id) => {
@@ -51,17 +51,11 @@ function Home() {
     }
   };
 
-  const addTrail = async () => {
-    navigate(`/addTrail/${id}`);
-    fetchFavourites(id); // re-fetch all favourites
-    setTrails([...favourites, ...trails]);
-  };
-
   useEffect(() => {
     fetchAccount(id);
+    fetchFavourites(id);
     fetchAllTrails();
-    // fetchFavourites(id);
-  }, []);
+  }, [trails]);
 
   return (
     <div>
@@ -88,14 +82,14 @@ function Home() {
         {/* able to add a trail if admin */}
         {account.role === "ADMIN" && (
           <button
-            onClick={() => addTrail()}
-            // to={`/addTrail/${id}`}
+            onClick={() => navigate(`/addTrail/${id}`)}
             className="btn btn-success mb-3"
           >
             Add a trail
           </button>
         )}
 
+        {/* trail cards */}
         <div className="container bg-body-secondary">
           {trails.map((trail) => (
             <Link
@@ -104,46 +98,23 @@ function Home() {
               style={{ textDecoration: "none" }}
             >
               <div className="card" id={trail.id}>
-                {/* <img src="..." className="card-img-top" alt="..."></img> */}
                 <p className="fs-6 fw-bold">{trail.name}</p>
                 <p className="fs-6 fw-lighter text-wrapper">
                   {trail.description}
                 </p>
                 <p>Length: {trail.length} miles</p>
-                <p className="fw-light fst-italic">Rating: {trail.rating}</p>
+                <p className="fw-light fst-italic">
+                  Rating: {trail.rating}/5.00
+                </p>
 
-                <div className="row justify-content-around">
-                  {/* able to add to favourite if logged in */}
-                  {id && (
-                    <Link
-                      className="btn btn-warning"
-                      style={{ width: "150px" }}
-                      onClick={() => {
-                        saveToFavourites(id, trail); // save trail to favs
-                      }}
-                    >
-                      Save to favourite
-                    </Link>
-                  )}
-
-                  {/* able to edit a trail if admin */}
-                  {account.role === "ADMIN" && (
-                    <Link
-                      to={`/editTrail/${id}/${trail.id}`}
-                      className="btn btn-primary"
-                      style={{ width: "100px" }}
-                    >
-                      Edit
-                    </Link>
-                  )}
-                </div>
+                <div className="row justify-content-around"></div>
               </div>
             </Link>
           ))}
         </div>
       </div>
 
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }
