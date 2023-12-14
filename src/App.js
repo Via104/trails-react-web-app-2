@@ -8,21 +8,40 @@ import AddTrail from "./Home/addTrail";
 
 import Signin from "./Users/signin";
 import Signup from "./Users/signup";
+import Profile from "./Profile";
+import { Provider } from "react-redux";
+import store from "./store";
+import CurrentUser from "./Users/currentUser";
+
+
 
 function App() {
   return (
-    <HashRouter>
-      <div>
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/home/:id" element={<Home />} />
-          <Route path="/addTrail/:id" element={<AddTrail />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route path="/signup" element={<Signup />} />
-        </Routes>
-      </div>
-    </HashRouter>
+    <Provider store={store}>
+      <HashRouter>
+        <div>
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/home/:id" element={<Home />} />
+            <Route path="/addTrail/:id" element={<AddTrail />} />
+            <Route path="/editTrail/:id/:trailId" element={<EditTrail />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
+
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:id" element={<Profile />} />
+
+
+            <Route path="/details/:id" element={<div>
+              Details are here
+            </div>} />
+
+
+          </Routes>
+        </div>
+      </HashRouter>
+    </Provider>
   );
 }
 
