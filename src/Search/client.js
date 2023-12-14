@@ -6,8 +6,11 @@ const TrailAPI_API = "https://trailapi-trailapi.p.rapidapi.com";
 const API_KEY = "d102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93";
 const request = axios.create({withCredentials: true,})
 // export const USERS_API = process.env.REACT_APP_API_URL;
-export const USERS_API = "http://localhost:4000/api/users";
-export const TRAILS_API = "http://localhost:4000/api/trails";
+const API_BASE = process.env.REACT_APP_API_BASE;
+const USERS_API = `${API_BASE}/users`;
+const TRAILS_API = `${API_BASE}/trails`;
+// export const USERS_API = "http://localhost:4000/api/users";
+// export const TRAILS_API = "http://localhost:4000/api/trails";
 
 export const signin = async (user) => {
   const response = await request.post(`${USERS_API}/signin`, user);
