@@ -33,8 +33,13 @@ function App() {
 
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:id" element={<Profile />} />
-            {/* FIX LATER */}
-            <Route path="/community" element={<Profile/>} />  
+
+
+            <Route path="/details/:id" element={<div>
+              Details are here
+            </div>} />
+
+
           </Routes>
         </div>
       </HashRouter>
