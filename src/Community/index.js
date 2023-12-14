@@ -10,7 +10,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
 import * as LikesClient from './client'
 import AltImg from "../Details/DefaultImg.png"
-import Navigation from "../Navigation";
+import Navigation from "../Navigation/profile-Nav";
 
 function Community() {
   // const account = useSelector((state) => state.accountReducer.account)

@@ -10,7 +10,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
 import * as Client from "../Search/client"
 import * as LikesClient from "../Likes/client"
-import Navigation from "../Navigation";
+import Navigation from "../Navigation/profile-Nav";
 import AltImg from "./DefaultImg.png"
 
 function Details() {
