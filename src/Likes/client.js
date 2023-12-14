@@ -3,10 +3,12 @@ import axios from "axios";
 const request = axios.create({
   withCredentials: true,
 });
+const API_BASE = process.env.REACT_APP_API_BASE;
+const BASE_API = `${API_BASE}/likes`;
 
 export const createUserLikesTrail = async (trailId, title, description) => {
   const response = await request.post(
-    `http://localhost:4000/api/users/likes/${trailId}`,
+    `${BASE_API}/user/trail/${trailId}`,
     {title: title, description, description}
   );
   console.log("creating trail like")
@@ -16,28 +18,28 @@ export const createUserLikesTrail = async (trailId, title, description) => {
 
 export const deleteUserLikesTrail = async (trailId) => {
   const response = await request.delete(
-    `http://localhost:4000/api/users/likes/${trailId}`
+    `${BASE_API}/trail/${trailId}`
   );
   return response.data;
 };
 
 export const findUsersLikedTrail = async (trailId) => {
   const response = await request.get(
-    `http://localhost:4000/api/trails/${trailId}/likes`
+    `${BASE_API}/trails/${trailId}`
   );
   return response.data;
 };
 
 export const findTrailsLikedByUser = async (userId) => {
   const response = await request.get(
-    `http://localhost:4000/api/users/${userId}/likes`
+    `${BASE_API}/user/${userId}`
   );
   return response.data;
 };
 
 export const findLikedTrails = async () => {
   const response = await request.get(
-    `http://localhost:4000/api/likes`
+    `${BASE_API}`
   );
   return response.data;
 };

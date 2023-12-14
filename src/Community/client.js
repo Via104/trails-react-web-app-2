@@ -6,9 +6,10 @@ const request = axios.create({
 
 
 // export const USERS_API = process.env.REACT_APP_API_URL;
-export const USERS_API = "http://localhost:4000/api/users";
-export const TRAILS_API = "http://localhost:4000/api/trails";
-export const BASE_API = "http://localhost:4000/api/likedTrails";
+const API_BASE = process.env.REACT_APP_API_BASE;
+const BASE_API = `${API_BASE}/likedTrails`;
+// export const BASE_API = "http://localhost:4000/api/likedTrails";
+
 
 
 // get all users who favored this trail

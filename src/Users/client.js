@@ -6,9 +6,14 @@ const request = axios.create({
 
 
 // export const USERS_API = process.env.REACT_APP_API_URL;
-export const USERS_API = "http://localhost:4000/api/users";
-export const TRAILS_API = "http://localhost:4000/api/trails";
-export const ADDTRAILS_API = "http://localhost:4000/api/addTrails";
+// export const USERS_API = "http://localhost:4000/api/users";
+// export const TRAILS_API = "http://localhost:4000/api/trails";
+// export const ADDTRAILS_API = "http://localhost:4000/api/addTrails";
+
+const API_BASE = process.env.REACT_APP_API_BASE;
+const USERS_API = `${API_BASE}/users`;
+const TRAILS_API = `${API_BASE}/trails`;
+const ADDTRAILS_API = `${API_BASE}/addTrails`;
 
 export const signin = async (user) => {
 
