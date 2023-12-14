@@ -10,14 +10,13 @@ import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
 import * as Client from "../Search/client"
 import * as LikesClient from "../Likes/client"
+import Navigation from "../Navigation/profile-Nav";
 import AltImg from "./DefaultImg.png"
 
 function Details() {
   const { trailId } = useParams();
   console.log(`TRAIL ID: ${trailId}`)
-  // const account = useSelector((state) => state.accountReducer.account)
   const [trail, setTrail] = useState()
-  // const [account, setAccount] = useState({})
   const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
   const [account, setAccount] = useState({
@@ -27,25 +26,20 @@ function Details() {
     role: "REGULAR",
   });
   const [likes, setLikes] = useState()
-  const dispatch = useDispatch()
   const navigate = useNavigate();
   console.log(`details: ${JSON.stringify(account)}`)
 
   useEffect(() => {
     try {
       Client.account().then(user => {
-        // dispatch(setAccount(user));
         setAccount(user)
-        // setFavorites(user.favorites)
         console.log(`in fetch Account`)
         // console.log(trailId)
         // console.log(user.favorites)
-        if (user.favorites && user.favorites.filter(t => t.id === Number(trailId)).length > 0) {
+        if (user.favourites && user.favourites.filter(t => t.id === Number(trailId)).length > 0) {
           console.log('this is favorited')
           setIsFavorite(true)
         }
-        
-        
       })
     } catch (err) {
       console.log('You are not signed in')
@@ -119,13 +113,13 @@ function Details() {
       <div className="container-fluid">
         <div className="d-flex justify-content-center">
           <div className="card mt-4 details shadow rounded align-middle">
-            <img style={{ "objectFit": "cover", 'objectPosition': '50% 75%', 'filter': 'brightness(50%)', 'height': '600px' }}
+            <img style={{ "objectFit": "cover", 'objectPosition': '50% 75%', 'filter': 'brightness(50%)', 'height': '500px'}}
               src={trail.thumbnail || AltImg}
               className="card-img-top"
               alt="Not Found"
             ></img>
             {/* IMAGE OVERLAY */}
-            <div className="card-img-overlay h-50 d-flex flex-column  justify-content-start">
+            <div className="card-img-overlay d-flex flex-column  justify-content-start" style={{'height': '500px'}}>
               <div className="d-flex">
                 <h3 className="card-title text-light me-auto display-1 justify-content-end">{trail.name}</h3>
                 {isFavorite ? <PiHeartFill onClick={() => { removeFromFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }} className=" btn text-danger" size={100} /> : <PiHeart onClick={() => { saveToFavorites(trail) }} style={{ 'border': 'none', 'background': 'none' }} className="btn text-light" size={100} />}
@@ -195,7 +189,7 @@ function Details() {
   }
 
   return (
-    <div>{trail && likes && account? DetailsPage() : <div>Still Loading</div>}</div>
+    <div>{trail && likes && account? <div><Navigation/> {DetailsPage()}</div> : <div>Still Loading</div>}</div>
   )
 }
 

@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Navigation from "../Navigation";
+import Navigation from "../Navigation/profile-Nav.js";
 import Footer from "../Navigation/footer.js";
 import * as client from "../Users/client.js";
 import "./index.css";
@@ -56,7 +56,7 @@ function Home() {
     fetchAccount(id);
     fetchFavourites(id);
     fetchAllTrails();
-  }, [trails]);
+  }, []);
 
   return (
     <div>

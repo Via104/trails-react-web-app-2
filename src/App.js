@@ -8,6 +8,7 @@ import Signin from "./Users/signin";
 import Signup from "./Users/signup";
 import Profile from "./Profile";
 import Details from "./Details/Details";
+import Community from "./Community";
 import { Provider } from "react-redux";
 import store from "./store";
 
@@ -28,6 +29,7 @@ function App() {
 
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/community" element={<Community />} />
 
 
             <Route path="/details/:trailId" element={<Details />} />
