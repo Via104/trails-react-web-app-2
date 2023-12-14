@@ -1,5 +1,7 @@
 import axios from "axios";
-import * as LikesClient from "../../Likes/client"
+import * as LikesClient from "../Likes/client"
+const TrailAPI_API = "https://trailapi-trailapi.p.rapidapi.com";
+const API_KEY = "d102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93";
 const request = axios.create({withCredentials: true,})
 // export const USERS_API = process.env.REACT_APP_API_URL;
 export const USERS_API = "http://localhost:4000/api/users";
@@ -105,9 +107,10 @@ export const removeFromFavorites = async (user, trail) => {
     alert('cannot remove from favorites')
   }
   
-  
 };
 
+
+//Add for radius, and id later
 export const findAllTrails = async () => {
   const options = {
     method: "GET",
@@ -122,7 +125,7 @@ export const findAllTrails = async () => {
     },
   };
   try {
-    const response = await request.request(options);
+    const response = await axios.request(options);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -130,24 +133,41 @@ export const findAllTrails = async () => {
   }
 };
 
-export const findTrailByID = async (searchID) => {
-  const options = {
-    method: "GET",
-    url:
-      "https://trailapi-trailapi.p.rapidapi.com/trails/" + searchID.toString(),
-    headers: {
-      "X-RapidAPI-Key": "d102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93",
-      "X-RapidAPI-Host": "trailapi-trailapi.p.rapidapi.com",
-    },
-  };
+export const findTrails = async (searchLatitude, searchLongitude) => {
+    
+    const options = {
+      method: 'GET',
+      url: TrailAPI_API + '/trails/explore/',
+      params: {
+        lat: searchLatitude.toString(),
+        lon: searchLongitude.toString()
+      },
+      headers: { //replace later
+        'X-RapidAPI-Key': 'd102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93',
+        'X-RapidAPI-Host': 'trailapi-trailapi.p.rapidapi.com'
+      }
+    };
 
-  const response = await request.request(options);
+    const response = await axios.request(options);
+    console.log(response.data);
+
+    return response.data.data;
+}
+
+export const findTrailByID = async (searchID) => {
+
+  const options = {
+    method: 'GET',
+    url: 'https://trailapi-trailapi.p.rapidapi.com/trails/' + searchID.toString(),
+    headers: {
+      'X-RapidAPI-Key': 'd102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93',
+      'X-RapidAPI-Host': 'trailapi-trailapi.p.rapidapi.com'
+    }
+  };
+  
+  const response = await axios.request(options);
   console.log(response.data);
 
-  return response.data;
-};
+  return response.data.data[0];
 
-export const updateTrail = async (trail) => {
-  const response = await request.put(`${TRAILS_API}/${trail.id}`, trail);
-  return response.data;
-};
+}

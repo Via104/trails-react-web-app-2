@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setAccount
-} from "../store/accountReducer";
+} from "../../store/accountReducer.js";
 import Navigation from "../Navigation";
 import Footer from "../Navigation/footer.js";
 import * as UserClient from "../Users/client.js";

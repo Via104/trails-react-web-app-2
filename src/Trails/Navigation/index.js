@@ -4,7 +4,7 @@ import * as client from "../Users/client";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setAccount
-} from "../store/accountReducer";
+} from "../../store/accountReducer";
 
 function Navigation() {
   const { id } = useParams();

@@ -8,8 +8,8 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { FaCar, FaLocationDot } from "react-icons/fa6";
 import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
-import * as TrailsClient from "../Search/client"
-import * as UserClient from "../Users/client"
+import * as TrailsClient from "../Trails/Search/client"
+import * as UserClient from "../Trails/Users/client"
 import * as LikesClient from "../Likes/client"
 import AltImg from "../Details/DefaultImg.png"
 
@@ -52,6 +52,7 @@ function Community() {
                   <p className="">{l.description}</p>
                 </div>
               </div>
+              {l.user}
 
             ))
           }

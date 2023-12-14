@@ -1,5 +1,5 @@
 import {createSlice } from "@reduxjs/toolkit";
-import db from "../Database"
+import db from "../Trails/Database"
 
 const initialState = {
   trails: db.trails,

@@ -8,19 +8,24 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { FaCar, FaLocationDot } from "react-icons/fa6";
 import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
-import * as TrailsClient from "../Search/client"
-import * as UserClient from "../Users/client"
+import * as Client from "../Search/client"
 import * as LikesClient from "../Likes/client"
 import AltImg from "./DefaultImg.png"
 
-function Details({ key }) {
+function Details() {
   const { trailId } = useParams();
+  console.log(`TRAIL ID: ${trailId}`)
   // const account = useSelector((state) => state.accountReducer.account)
   const [trail, setTrail] = useState()
   // const [account, setAccount] = useState({})
   const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
-  const [account, setAccount] = useState({})
+  const [account, setAccount] = useState({
+    _id: null,
+    username: "",
+    passowrd: "",
+    role: "REGULAR",
+  });
   const [likes, setLikes] = useState()
   const dispatch = useDispatch()
   const navigate = useNavigate();
@@ -28,7 +33,7 @@ function Details({ key }) {
 
   useEffect(() => {
     try {
-      UserClient.account().then(user => {
+      Client.account().then(user => {
         // dispatch(setAccount(user));
         setAccount(user)
         // setFavorites(user.favorites)
@@ -39,13 +44,14 @@ function Details({ key }) {
           console.log('this is favorited')
           setIsFavorite(true)
         }
-        console.log(account)
+        
+        
       })
     } catch (err) {
       console.log('You are not signed in')
     }
 
-    TrailsClient.findTrailByID(trailId).then(t => {
+    Client.findTrailByID(trailId).then(t => {
       setTrail(t)
     })
     LikesClient.findUsersLikedTrail(trailId).then((r) => (
@@ -57,11 +63,10 @@ function Details({ key }) {
 
   const saveToFavorites = async (trail) => {
     if (!account._id) {
-      navigate("/signin")
-
+      alert("Create account to add to favorites!")
     }
     else {
-      const updatedUser = await UserClient.addToFavorites(account, trail);
+      const updatedUser = await Client.addToFavorites(account, trail);
       console.log(updatedUser)
       setAccount(updatedUser)
       setIsFavorite(true)
@@ -73,11 +78,11 @@ function Details({ key }) {
 
   const removeFromFavorites = async (trail) => {
     if (!account._id) {
-      navigate("/signin")
+      alert("Create account to add to favorites!")
 
     }
     else {
-      const updatedUser = await UserClient.removeFromFavorites(account, trail);
+      const updatedUser = await Client.removeFromFavorites(account, trail);
       console.log(updatedUser)
       setAccount(updatedUser)
       setIsFavorite(false)
@@ -107,6 +112,9 @@ function Details({ key }) {
 
 
   const DetailsPage = () => {
+    console.log("THIS IS THE ACCOUNT")
+    console.log(account)
+    console.log(account._id)
     return (
       <div className="container-fluid">
         <div className="d-flex justify-content-center">
@@ -174,8 +182,6 @@ function Details({ key }) {
                         style={{ 'textDecoration': "none" }}>
                         <p className="ms-2 card-text text-dark me-2"><PiHeartFill className="text-danger mb-1 me-1" />Liked by {l.user.username}</p>
                       </Link>
-
-
                     </div>
                   ))}
                 </div>
@@ -189,7 +195,7 @@ function Details({ key }) {
   }
 
   return (
-    <div>{trail && likes ? DetailsPage() : <div>Still Loading</div>}</div>
+    <div>{trail && likes && account? DetailsPage() : <div>Still Loading</div>}</div>
   )
 }
 
