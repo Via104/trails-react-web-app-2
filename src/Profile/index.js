@@ -6,9 +6,7 @@ import { useDispatch } from "react-redux";
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navigation from "../Navigation/index.js";
-
-import { FaUser } from "react-icons/fa";
+import Navigation from "../Navigation/profile-Nav.js";
 
 function Profile() {
 
@@ -16,8 +14,19 @@ function Profile() {
 
     var isMyProfile = (id === undefined);
 
-    const [currentUser, setCurrentUser] = useState(null);
-    const [viewedUser, setViewedUser] = useState(null);
+    const [isAnonUser, setIsAnonUser] = useState(false);
+    const [currentUser, setCurrentUser] = useState({
+        _id: null,
+        username: "",
+        password: "",
+        role: "REGULAR",
+      });
+    const [viewedUser, setViewedUser] = useState({
+        _id: null,
+        username: "",
+        password: "",
+        role: "REGULAR",
+      });
     const [favourites, setFavourites] = useState([]); // users favourited trails
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,19 +38,24 @@ function Profile() {
       //navigate("/signin");
     };
 
-    // add a Trail to your favourites
-    const saveToFavourites = async (userId, trail) => {
-        await client.addToFavourites(userId, trail);
-        setFavourites([...favourites, trail]);
-        alert("Added trail to favourite!");
-    };
-
     const fetchCurrentUser = async () => {
       try {
         const currentUser = await client.account();
-        //console.log("Profile" + currentUser);
-        setCurrentUser(currentUser);
-        setFavourites(currentUser.favourites);
+
+        if(currentUser._id === undefined) {
+            console.log("Anonymous user detected");
+            setCurrentUser(null);
+            setIsAnonUser(true);
+            isMyProfile = false;
+        } else {
+            setCurrentUser(currentUser);
+            if (isMyProfile) {
+                setFavourites(currentUser.favourites);
+            }
+            setIsAnonUser(false);
+            isMyProfile = true
+        }
+        
         //console.log("setstate complete - dispatch next")
         dispatch(reducer.setCurrentUser(currentUser));
       } catch (error) {
@@ -53,13 +67,11 @@ function Profile() {
     const fetchViewedUser = async (id) => {
         try {
           const viewedUser = await client.findUserById(id);
-          //console.log("Profile" + currentUser);
           setViewedUser(viewedUser);
           setFavourites(viewedUser.favourites);
-          //console.log("setstate complete - dispatch next")
-          //sdispatch(reducer.setCurrentUser(currentUser));
+          dispatch(reducer.setViewedUser(viewedUser));
         } catch (error) {
-          console.log("Current user was not found")
+          console.log("Viewed user was not found")
           //navigate("signin");
         }
       };
@@ -78,170 +90,138 @@ function Profile() {
         if (!isMyProfile) {
             console.log("I am viewing a user who I will get now");
             fetchViewedUser(id);
-            console.log("I have retrieved the user: " + (!viewedUser));
         }
     }, []);
 
+    const profilePage = () => {
+
+        return (
+            <div>
+                <Navigation />
+    
+                {/* Trying to access curernt user's profile when not logged in prompts you to login */}
+                {isMyProfile && isAnonUser && (
+                    <div>
+                        <h1 className="text-center pt-3">Please login if you would like to see your profile info here!</h1>
+                    </div>
+    
+                )}
+                
+                {/* Check ternary operator here TODO */}
+                {isMyProfile && currentUser && (
+                    <div>
+    
+                        <div className="mt-3 bg-success">
+                            {/* <FaUser className="text-center"/> */}
+                            <h1 className="text-center pt-3">{currentUser.username}'s Profile</h1>
+                        </div>
+    
+                        <div className="d-flex flex-row">
+                            <div>Username: </div>
+                            <input
+                                type="username"
+                                className="form-control"
+                                value={currentUser.username}
+                                onChange={(e) => setCurrentUser({ ...currentUser, username: e.target.value })}/>
+                            
+                        </div>
+    
+                        <div className="d-flex flex-row">
+                            <div>Password: </div>
+                            <input
+                                type="password"
+                                className="form-control"
+                                value={currentUser.password}
+                                onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}/>
+                            
+                        </div>
+    
+                        {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
+                        <button onClick={signout} className="btn btn-danger">
+                            Sign Out
+                        </button>
+                        <button onClick={updateUser}>Update</button>
+                        <hr />
+    
+                        <h1> My favorites</h1>
+                        <div className="container bg-body-secondary">
+                            {favourites.map((trail) => (
+                                <Link
+                                key={trail.id}
+                                to={`/details/${trail.id}`}
+                                style={{ textDecoration: "none" }}
+                                >
+                                <div className="card" id={trail.id}>
+                                    {/* <img src="..." className="card-img-top" alt="..."></img> */}
+                                    <p className="fs-6 fw-bold">{trail.name}</p>
+                                    <p className="fs-6 fw-lighter text-wrapper">
+                                    {trail.description}
+                                    </p>
+                                    <p>Length: {trail.length} miles</p>
+                                    <p className="fw-light fst-italic">Rating: {trail.rating}</p>
+                                </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                )}
+    
+    
+                {!isMyProfile && viewedUser && (
+                    <div>
+                        <div className="mt-3 bg-success">
+                            {/* <FaUser className="text-center"/> */}
+                            <h1 className="text-center pt-3">{viewedUser.username}'s Profile</h1>
+                        </div>
+    
+                        <h1> {viewedUser.username}'s favorites</h1>
+    
+                        <div className="container bg-body-secondary">
+                            {favourites.map((trail) => (
+                                <Link
+                                key={trail.id}
+                                to={`/details/${trail.id}`}
+                                style={{ textDecoration: "none" }}
+                                >
+                                <div className="card" id={trail.id}>
+                                    {/* <img src="..." className="card-img-top" alt="..."></img> */}
+                                    <p className="fs-6 fw-bold">{trail.name}</p>
+                                    <p className="fs-6 fw-lighter text-wrapper">
+                                    {trail.description}
+                                    </p>
+                                    <p>Length: {trail.length} miles</p>
+                                    <p className="fw-light fst-italic">Rating: {trail.rating}</p>
+    
+                                    <div className="row justify-content-around">
+
+                                    </div>
+                                </div>
+                                </Link>
+                            ))}
+                        </div>
+                        
+                    </div>
+    
+                )}
+    
+    
+            </div>
+        );
+
+    }
+
     return (
+
         <div>
-            <Navigation />
-            
-            {/* Check ternary operator here TODO */}
-            {isMyProfile && currentUser && (
-                <div>
+            {
+                (currentUser && !isAnonUser && favourites && isMyProfile) ||  //Viewing own profile page
+                (currentUser && viewedUser && favourites && !isMyProfile) ||  //Viewing someone else's profile
+                (isAnonUser)? 
+                profilePage() : <div>Still Loading</div>}
+            </div>
 
-                    <div className="mt-3 bg-success">
-                        {/* <FaUser className="text-center"/> */}
-                        <h1 className="text-center pt-3">{currentUser.username}'s Profile MyProfile</h1>
-                    </div>
-
-                    <div className="d-flex flex-row">
-                        <div>Username: </div>
-                        <input
-                            type="username"
-                            className="form-control"
-                            value={currentUser.username}
-                            onChange={(e) => setCurrentUser({ ...currentUser, username: e.target.value })}/>
-                        
-                    </div>
-
-                    <div className="d-flex flex-row">
-                        <div>Password: </div>
-                        <input
-                            type="password"
-                            className="form-control"
-                            value={currentUser.password}
-                            onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}/>
-                        
-                    </div>
-
-                    {/* <pre>{JSON.stringify(currentUser, null, 2)}</pre> */}
-                    <button onClick={signout} className="btn btn-danger">
-                        Sign Out
-                    </button>
-                    <button onClick={updateUser}>Update</button>
-                    <hr />
-
-                    <h1> My favorites</h1>
-                    <div className="container bg-body-secondary">
-                        {favourites.map((trail) => (
-                            <Link
-                            key={trail.id}
-                            to={`/details/${trail.id}`}
-                            style={{ textDecoration: "none" }}
-                            >
-                            <div className="card" id={trail.id}>
-                                {/* <img src="..." className="card-img-top" alt="..."></img> */}
-                                <p className="fs-6 fw-bold">{trail.name}</p>
-                                <p className="fs-6 fw-lighter text-wrapper">
-                                {trail.description}
-                                </p>
-                                <p>Length: {trail.length} miles</p>
-                                <p className="fw-light fst-italic">Rating: {trail.rating}</p>
-
-                                <div className="row justify-content-around">
-                                {/* able to add to favourite if logged in
-                                {id && (
-                                    <Link
-                                    className="btn btn-warning"
-                                    style={{ width: "150px" }}
-                                    onClick={() => {
-                                        saveToFavourites(id, trail); // save trail to favs
-                                    }}
-                                    >
-                                    Save to favourite
-                                    </Link>
-                                )} 
-                                MAYBE CHANGE TO REMOVE FROM FAVORITES IF TIME PERMITS*/}
-
-                                {/* able to edit a trail if admin */}
-                                {currentUser.role === "ADMIN" && (
-                                    <Link
-                                    to={`/editTrail/${currentUser.id}/${trail.id}`}
-                                    className="btn btn-primary"
-                                    style={{ width: "100px" }}
-                                    >
-                                    Edit
-                                    </Link>
-                                )}
-                                </div>
-                            </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-
-            {!isMyProfile && viewedUser && (
-                <div>
-                    <div className="mt-3 bg-success">
-                        {/* <FaUser className="text-center"/> */}
-                        <h1 className="text-center pt-3">{viewedUser.username}'s Profile NotMyProfile</h1>
-                    </div>
-
-                    <h1> {viewedUser.username}'s favorites</h1>
-
-                    <div className="container bg-body-secondary">
-                        {favourites.map((trail) => (
-                            <Link
-                            key={trail.id}
-                            to={`/details/${trail.id}`}
-                            style={{ textDecoration: "none" }}
-                            >
-                            <div className="card" id={trail.id}>
-                                {/* <img src="..." className="card-img-top" alt="..."></img> */}
-                                <p className="fs-6 fw-bold">{trail.name}</p>
-                                <p className="fs-6 fw-lighter text-wrapper">
-                                {trail.description}
-                                </p>
-                                <p>Length: {trail.length} miles</p>
-                                <p className="fw-light fst-italic">Rating: {trail.rating}</p>
-
-                                <div className="row justify-content-around">
-                                {/* Able to add to your own favorites when you are viewing another page and you're loggedin */}
-                                {currentUser && (
-                                    <Link
-                                    className="btn btn-warning"
-                                    style={{ width: "150px" }}
-                                    onClick={() => {
-                                        saveToFavourites(currentUser.id, trail); // save trail to favs
-                                    }}
-                                    >
-                                    Save to favourite
-                                    </Link>
-                                )} 
-
-                                {/* able to edit a trail if admin */}
-                                {currentUser.role === "ADMIN" && (
-                                    <Link
-                                    to={`/editTrail/${currentUser.id}/${trail.id}`}
-                                    className="btn btn-primary"
-                                    style={{ width: "100px" }}
-                                    >
-                                    Edit
-                                    </Link>
-                                )}
-                                </div>
-                            </div>
-                            </Link>
-                        ))}
-                    </div>
-                    
-                </div>
-
-            )}
-
-            {/* {(currentUser === null) && viewedUser &&(
-                <div>
-                    You are viewing anonymously
-                </div>
-
-            )} */}
-
-
-        </div>
     );
+    
 
 }
 export default Profile;

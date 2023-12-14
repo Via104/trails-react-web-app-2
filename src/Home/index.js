@@ -4,6 +4,7 @@ import Navigation from "../Navigation";
 import Footer from "../Navigation/footer.js";
 import * as client from "../Users/client.js";
 import "./index.css";
+import Search from "../Search/search.js";
 
 function Home() {
   const { id } = useParams();
@@ -64,15 +65,7 @@ function Home() {
       {/* search section */}
       <div className="mt-3 bg-success">
         <h1 className="text-center pt-3">Find a trail</h1>
-        <div className="d-flex justify-content-center p-3">
-          <input
-            className="form-control me-3 w-50"
-            placeholder="Search by city or trail name"
-          ></input>
-          <Link key={`/search`} to={`/search`} className="btn btn-secondary">
-            Explore!
-          </Link>
-        </div>
+        <Search />
       </div>
 
       {/* Local favourite trails */}
