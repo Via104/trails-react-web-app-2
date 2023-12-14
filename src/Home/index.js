@@ -62,9 +62,14 @@ function Home() {
     <div>
       <Navigation />
 
+      {id && (
+        <div className="text-center mb-4">
+          <h1>Welcome {account.username}!</h1>
+        </div>
+      )}
       {/* search section */}
-      <div className="mt-3 bg-success">
-        <h1 className="text-center pt-3">Find a trail</h1>
+      <div className="mt-2 bg-success">
+        <h2 className="text-center pt-3">Find a trail</h2>
         <Search />
       </div>
 

@@ -17,30 +17,28 @@ function Navigation() {
     { to: id ? `/home/${id}` : "/home", label: "Home" },
     { to: id ? `/community` : "/community", label: "Community" },
   ];
-  const linksAtEnd = [
-    { to: id ? `/profile` : "/profile", label: "Profile" },
-  ];
+  const linksAtEnd = [{ to: id ? `/profile` : "/profile", label: "Profile" }];
   const active = (path) => (pathname.includes(path) ? "active" : "");
   const { pathname } = useLocation();
 
   const signout = async () => {
     await client.signout();
+    navigate("/home");
     alert("Signing you out");
-    //navigate("/home");
   };
 
   const fetchCurrentUser = async () => {
     try {
       const currentUser = await client.account();
 
-      if(currentUser._id === undefined) {
-          console.log("Anonymous user detected");
-          setCurrentUser(null);
+      if (currentUser._id === undefined) {
+        console.log("Anonymous user detected");
+        setCurrentUser(null);
       } else {
-          setCurrentUser(currentUser);
+        setCurrentUser(currentUser);
       }
     } catch (error) {
-      console.log("Current user was not found")
+      console.log("Current user was not found");
     }
   };
 
@@ -75,7 +73,7 @@ function Navigation() {
           </Link>
         ))}
         {/* shows sign in button if not logged in */}
-        {(!currentUser) && (
+        {!currentUser && (
           <Link
             key={"/signin"}
             to={"/signin"}
