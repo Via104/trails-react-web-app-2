@@ -55,7 +55,7 @@ function Home() {
     fetchAccount(id);
     fetchFavourites(id);
     fetchAllTrails();
-  }, [trails]);
+  }, []);
 
   return (
     <div>

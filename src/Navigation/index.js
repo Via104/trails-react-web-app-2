@@ -8,7 +8,7 @@ function Navigation() {
 
   const links = [
     { to: id ? `/home/${id}` : "/home", label: "Home" },
-    { to: id ? `/community/${id}` : "/community", label: "Community" },
+    { to: "/community", label: "Community" },
   ];
   const linksAtEnd = [
     { to: id ? `/profile` : "/profile", label: "Profile" },

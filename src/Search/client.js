@@ -1,5 +1,7 @@
 import axios from "axios";
 import * as LikesClient from "../Likes/client"
+import * as TrailsClient from '../Community/client'
+import { Tab } from "bootstrap";
 const TrailAPI_API = "https://trailapi-trailapi.p.rapidapi.com";
 const API_KEY = "d102ce3527mshc4b1f040aa83cb1p137adbjsn3f7e380a5e93";
 const request = axios.create({withCredentials: true,})
@@ -60,21 +62,24 @@ export const findUsersByRole = async (role) => {
 };
 
 export const findfavoritesByUserId = async (id) => {
-  const response = await request.get(`${USERS_API}/${id}/favorites`);
+  const response = await request.get(`${USERS_API}/${id}/favourites`);
   return response.data;
 };
 
 export const addToFavorites = async (user, trail) => {
-  if(user.favorites && user.favorites.filter((fav) => fav.id === Number(trail.id)).length === 0) {
-    const favs = [...user.favorites, trail];
+  if(user.favourites && user.favourites.filter((fav) => fav.id === Number(trail.id)).length === 0) {
+    const favs = [...user.favourites, trail];
     try { 
       console.log(user)
       console.log(trail)
       const response = await request.put(
-        `${USERS_API}/favorites/${user._id}/`,
+        `${USERS_API}/favourites/${user._id}/`,
         {user: user, favs: favs}
       );
       await LikesClient.createUserLikesTrail(trail.id, trail.name, trail.description)
+      console.log('about to go to trails client')
+      console.log(trail)
+      await TrailsClient.addLikedUser(trail.id, trail)
       return response.data;
     } catch (err) {
       console.log(err)
@@ -82,7 +87,7 @@ export const addToFavorites = async (user, trail) => {
     }
   }else {
     alert('already in favs')
-    console.log(`favs length: ${user.favorites.length}`)
+    console.log(`favs length: ${user.favourites.length}`)
     return user
   } 
 };
@@ -92,13 +97,14 @@ export const removeFromFavorites = async (user, trail) => {
     console.log("in removeFromFavorites")
     console.log(user)
     console.log(trail)
-    if (user.favorites) {
-      const favs = user.favorites.filter((fav) => fav.id !== Number(trail.id));
+    if (user.favourites) {
+      const favs = user.favourites.filter((fav) => fav.id !== Number(trail.id));
       const response = await request.put(
-        `${USERS_API}/favorites/${user._id}/`,
+        `${USERS_API}/favourites/${user._id}/`,
         {user: user, favs: favs}
       );
       LikesClient.deleteUserLikesTrail(trail.id)
+      TrailsClient.removeLikedUser(trail.id)
       return response.data;
     }
     return user
