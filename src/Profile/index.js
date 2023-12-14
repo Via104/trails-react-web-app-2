@@ -113,7 +113,7 @@ function Profile() {
     
                         <div className="mt-3 bg-success">
                             {/* <FaUser className="text-center"/> */}
-                            <h1 className="text-center pt-3">{currentUser.username}'s Profile MINE</h1>
+                            <h1 className="text-center pt-3">{currentUser.username}'s Profile</h1>
                         </div>
 
                         <h3 className="text-center pt-3">User Info</h3>
@@ -173,7 +173,7 @@ function Profile() {
                     <div>
                         <div className="mt-3 bg-success">
                             {/* <FaUser className="text-center"/> */}
-                            <h1 className="text-center pt-3">{viewedUser.username}'s Profile NOT MINE</h1>
+                            <h1 className="text-center pt-3">{viewedUser.username}'s Profile</h1>
                         </div>
     
                         <h1> {viewedUser.username}'s favorites</h1>
