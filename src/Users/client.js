@@ -32,7 +32,6 @@ export const updateUser = async (id, user) => {
 
 export const users = async () => {
   const response = await request.get(`${USERS_API}`);
-  const response = await axios.get(`${USERS_API}`);
   return response.data;
 };
 

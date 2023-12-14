@@ -94,7 +94,7 @@ function Home() {
           {trails.map((trail) => (
             <Link
               key={trail.id}
-              to={trail.url}
+              to={`/details/${trail.id}`}
               style={{ textDecoration: "none" }}
             >
               <div className="card" id={trail.id}>

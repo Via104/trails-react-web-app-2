@@ -1,0 +1,16 @@
+.card.details{
+  width: 1200px;
+  border-radius: 10px;
+  --bs-card-inner-border-radius: 10px;
+}
+
+.tag {
+  border-radius: 5px;
+  border-color: black;
+  border: 2px;
+  border-style: solid;
+}
+.overflow {
+  overflow-y: scroll;
+  height: 100px;
+}

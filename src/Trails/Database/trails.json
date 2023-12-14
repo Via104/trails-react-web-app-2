@@ -1,0 +1,29 @@
+[
+  {
+    "_id": 123,
+    "name": "Charles River Pathway Short Loop",
+    "difficulty": "Easy",
+    "rating": 4.6, 
+    "length": 3.0,
+    "elevation_gain": 22,
+    "route_type": "loop",
+    "summary": "Try this 3.0-mile loop trail near Boston, Massachusetts. Generally considered an easy route, it takes an average of 52 min to complete. This is a very popular area for birding, road biking, and running, so you'll likely encounter other people while exploring. The trail is open year-round and is beautiful to visit anytime. Dogs are welcome, but must be on a leash.",
+    "description": "This leisurely ride takes you to some of Boston's wonderful waterways, following the beautiful and historic Charles River on both the Boston and Cambridge sides as you make your way towards Boston Harbor. This tour is an excellent introduction to the paved bike paths and includes some of the best views of the city. This area is great for children and inexperienced riders. Accessibility: There do not appear to be any designated accessible spaces in the paved parking lots off of Cambridge Street at the northeast end of the trail. However, the Charles/MGH Red Line Station is accessible. The trail surface is pavement (with partial railings), smooth, and typically at least 4 feet wide. The estimated grade is mostly gentle (5% or less). This trail will likely be navigable for most wheelchairs/mobility equipment or stroller users. There are benches along the route for resting.",
+    "tags" : ["Dogs on leash", "Wheelchair friendly", "Kid friendly", "Stroller friendly", "Road biking", "Walking", "Bird watching", "Running", "Paved", "River", "Views", "Wildflowers", "Wildlife", "City walk", "Historic site"]
+
+  }, 
+  
+  {
+    "_id": 124,
+    "name": "Charles River Pathway Short Loop",
+    "difficulty": "Easy",
+    "rating": 4.6, 
+    "length": 3.0,
+    "elevation_gain": 22,
+    "route_type": "loop",
+    "summary": "Try this 3.0-mile loop trail near Boston, Massachusetts. Generally considered an easy route, it takes an average of 52 min to complete. This is a very popular area for birding, road biking, and running, so you'll likely encounter other people while exploring. The trail is open year-round and is beautiful to visit anytime. Dogs are welcome, but must be on a leash.",
+    "description": "This leisurely ride takes you to some of Boston's wonderful waterways, following the beautiful and historic Charles River on both the Boston and Cambridge sides as you make your way towards Boston Harbor. This tour is an excellent introduction to the paved bike paths and includes some of the best views of the city. This area is great for children and inexperienced riders. Accessibility: There do not appear to be any designated accessible spaces in the paved parking lots off of Cambridge Street at the northeast end of the trail. However, the Charles/MGH Red Line Station is accessible. The trail surface is pavement (with partial railings), smooth, and typically at least 4 feet wide. The estimated grade is mostly gentle (5% or less). This trail will likely be navigable for most wheelchairs/mobility equipment or stroller users. There are benches along the route for resting.",
+    "tags" : ["Dogs on leash", "Wheelchair friendly", "Kid friendly", "Stroller friendly", "Road biking", "Walking", "Bird watching", "Running", "Paved", "River", "Views", "Wildflowers", "Wildlife", "City walk", "Historic site"]
+
+  }
+]
