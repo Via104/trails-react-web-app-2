@@ -47,7 +47,7 @@ function Navigation() {
   //check victora useeffect and render loading
   useEffect(() => {
     fetchCurrentUser();
-  }, []);
+  }, [currentUser]);
 
   return (
     <div className="d-flex justify-content-between p-2">
