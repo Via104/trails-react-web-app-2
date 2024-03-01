@@ -70,8 +70,8 @@ export const findUsersByRole = async (role) => {
   return response.data;
 };
 
-export const findFavouritesByUserId = async (id) => {
-  const response = await request.get(`${USERS_API}/${id}/favourites`);
+export const findFavoritesByUserId = async (userId) => {
+  const response = await request.get(`${USERS_API}/${userId}/favorites`);
   return response.data;
 };
 

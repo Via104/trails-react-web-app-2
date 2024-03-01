@@ -22,7 +22,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/home/:id" element={<Home />} />
             <Route path="/addTrail/:id" element={<AddTrail />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/signup" element={<Signup />} />

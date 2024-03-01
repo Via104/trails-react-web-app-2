@@ -31,11 +31,10 @@ function Details() {
 
   useEffect(() => {
     try {
+      // Find the account of the current user
       Client.account().then(user => {
         setAccount(user)
-        console.log(`in fetch Account`)
-        // console.log(trailId)
-        // console.log(user.favorites)
+        // determine if this trail is favorited by the current user
         if (user.favourites && user.favourites.filter(t => t.id === Number(trailId)).length > 0) {
           console.log('this is favorited')
           setIsFavorite(true)
@@ -44,10 +43,11 @@ function Details() {
     } catch (err) {
       console.log('You are not signed in')
     }
-
+    // Getting trail object
     Client.findTrailByID(trailId).then(t => {
       setTrail(t)
     })
+    // Finding all users who like this trail
     LikesClient.findUsersLikedTrail(trailId).then((r) => (
       setLikes(r)
     ));
@@ -56,6 +56,7 @@ function Details() {
 
 
   const saveToFavorites = async (trail) => {
+    // check if user is signed in
     if (!account._id) {
       alert("Create account to add to favorites!")
     }

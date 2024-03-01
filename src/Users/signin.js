@@ -22,7 +22,7 @@ function Signin() {
         const currentUser = await client.signin(user);
         console.log(currentUser);
         setCurrentUser(currentUser);
-        navigate("/home/" + currentUser._id);
+        navigate("/home");
       }
     } catch (err) {
       console.log(err);

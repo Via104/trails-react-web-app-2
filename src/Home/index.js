@@ -7,11 +7,10 @@ import "./index.css";
 import Search from "../Search/search.js";
 
 function Home() {
-  const { id } = useParams();
   const navigate = useNavigate();
-
   const [trails, setTrails] = useState([]); // trails displayed on home
-  const [favourites, setFavourites] = useState([]); // users favourited trails
+  const [favorites, setFavorites] = useState([]); // users favorited trails
+  // current logged in user, fields are empty if not logged in
   const [account, setAccount] = useState({
     _id: null,
     username: "",
@@ -19,17 +18,19 @@ function Home() {
     role: "REGULAR",
   });
 
-  const fetchFavourites = async (id) => {
-    // fetch favs if signed in
-    if (id) {
-      const favs = await client.findFavouritesByUserId(id);
-      setFavourites(favs);
+  const fetchFavorites = async () => {
+    // If the user is signed in, fetch their liked trails
+    if (account._id) {
+      // List of trail objects that are liked by the user
+      const favs = await client.findFavoritesByUserId(account._id);
+      setFavorites(favs);
     }
   };
 
+  //fetch the trails to be displayed on the home page
   const fetchAllTrails = async () => {
     const fetchedTrails = await client.findAllTrails();
-    const idsInFavs = favourites.map((item) => item.id);
+    const idsInFavs = favorites.map((item) => item.id);
     // trails that have not been marked as favourite
     const notFavoredTrails = fetchedTrails.data.filter(
       (item) => !idsInFavs.includes(item.id)
@@ -38,31 +39,31 @@ function Home() {
     setTrails([...customizedTrails, ...notFavoredTrails]);
   };
 
-  const fetchAccount = async (id) => {
+  // fetch the account of the signed in user
+  const fetchAccount = async () => {
     try {
-      if (id) {
-        const account = await client.findUserById(id);
-        setAccount(account);
-      } else {
-        const account = await client.account();
-        setAccount(account);
-      }
+      // User object of the signed in user, empty object if not signed in
+      const account = await client.account();
+      setAccount(account);
     } catch (err) {
+      alert('Could not fetch account.')
       navigate("/signin");
     }
   };
 
   useEffect(() => {
-    fetchAccount(id);
-    fetchFavourites(id);
+    fetchAccount();
+    fetchFavorites();
     fetchAllTrails();
+
+    
   }, []);
 
   return (
     <div>
       <Navigation />
 
-      {id && (
+      {account._id && (
         <div className="text-center mb-4">
           <h1>Welcome {account.username}!</h1>
         </div>
@@ -73,14 +74,14 @@ function Home() {
         <Search />
       </div>
 
-      {/* Local favourite trails */}
+      {/* Local favorite trails */}
       <div className="container-fluid p-3">
-        <h3>Local Favourites</h3>
+        <h3>Local Favorites</h3>
 
         {/* able to add a trail if admin */}
         {account.role === "ADMIN" && (
           <button
-            onClick={() => navigate(`/addTrail/${id}`)}
+            onClick={() => navigate(`/addTrail/${account._id}`)}
             className="btn btn-success mb-3"
           >
             Add a trail
