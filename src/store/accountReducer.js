@@ -1,8 +1,8 @@
-import {createSlice } from "@reduxjs/toolkit";
-
+import { createSlice } from "@reduxjs/toolkit";
+import * as client from "../Users/client.js";
 const initialState = {
-  account: {}
-  }
+  account: await client.account(),
+};
 
 const accountSlice = createSlice({
   name: "account",
@@ -10,10 +10,10 @@ const accountSlice = createSlice({
   reducers: {
     setAccount: (state, action) => {
       state.account = action.payload;
-    }
-  }
+    },
+  },
 
-})
+});
 
 export const {setAccount} = accountSlice.actions;
 export default accountSlice.reducer;

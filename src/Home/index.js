@@ -5,18 +5,26 @@ import Footer from "../Navigation/footer.js";
 import * as client from "../Users/client.js";
 import "./index.css";
 import Search from "../Search/search.js";
+import  { useSelector, UseDispatch} from 'react-redux';
+import { setAccount } from "../store/accountReducer.js";
 
 function Home() {
+  console.log("HOME PAGE")
   const navigate = useNavigate();
+  const {account} = useSelector((state) => state.accountReducer)
+  console.log(account)
+
   const [trails, setTrails] = useState([]); // trails displayed on home
   const [favorites, setFavorites] = useState([]); // users favorited trails
   // current logged in user, fields are empty if not logged in
-  const [account, setAccount] = useState({
-    _id: null,
-    username: "",
-    passowrd: "",
-    role: "REGULAR",
-  });
+  // const [account, setAccount] = useState({
+  //   _id: null,
+  //   username: "",
+  //   passowrd: "",
+  //   role: "REGULAR",
+  // });
+  // const account = {}
+  // console.log(account)
 
   const fetchFavorites = async () => {
     // If the user is signed in, fetch their liked trails
@@ -39,29 +47,42 @@ function Home() {
     setTrails([...customizedTrails, ...notFavoredTrails]);
   };
 
-  // fetch the account of the signed in user
-  const fetchAccount = async () => {
-    try {
-      // User object of the signed in user, empty object if not signed in
-      const account = await client.account();
-      setAccount(account);
-    } catch (err) {
-      alert('Could not fetch account.')
-      navigate("/signin");
-    }
-  };
+  // // fetch the account of the signed in user
+  // const fetchAccount = async () => {
+  //   try {
+  //     // User object of the signed in user, empty object if not signed in
+  //     const user = await client.account();
+  //     console.log(user)
+  //     setAccount(user);
+  //   } catch (err) {
+  //     alert('Could not fetch account.')
+  //     navigate("/signin");
+  //   }
+  // };
 
   useEffect(() => {
-    fetchAccount();
+    // const fetchAccount = async () => {
+    //   try {
+    //     // User object of the signed in user, empty object if not signed in
+    //     const user = await client.account();
+    //     console.log(user)
+    //     setAccount(user);
+    //   } catch (err) {
+    //     alert('Could not fetch account.')
+    //     navigate("/signin");
+    //   }
+    // };
+    // fetchAccount();
     fetchFavorites();
     fetchAllTrails();
 
     
-  }, []);
+  }, [account]);
 
-  return (
+
+    return (
     <div>
-      <Navigation />
+      <Navigation userId={account._id} />
 
       {account._id && (
         <div className="text-center mb-4">
@@ -79,7 +100,7 @@ function Home() {
         <h3>Local Favorites</h3>
 
         {/* able to add a trail if admin */}
-        {account.role === "ADMIN" && (
+        {account && account.role === "ADMIN" && (
           <button
             onClick={() => navigate(`/addTrail/${account._id}`)}
             className="btn btn-success mb-3"

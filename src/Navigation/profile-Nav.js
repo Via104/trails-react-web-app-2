@@ -1,51 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import * as client from "../Users/client";
+import { useSelector, useDispatch } from "react-redux";
+import { setAccount } from "../store/accountReducer";
 
-function Navigation() {
-  const { id } = useParams();
+function Navigation({userId}) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const active = (path) => (pathname.includes(path) ? "active" : "");
+  const account = useSelector((state) => state.accountReducer)
+  const dispatch = useDispatch()
 
-  const [currentUser, setCurrentUser] = useState({
-    _id: null,
-    username: "",
-    password: "",
-    role: "REGULAR",
-  });
+  // const [currentUser, setCurrentUser] = useState({
+  //   _id: null,
+  //   username: "",
+  //   password: "",
+  //   role: "REGULAR",
+  // });
 
   const links = [
-    { to: id ? `/home/${id}` : "/home", label: "Home" },
-    { to: id ? `/community` : "/community", label: "Community" },
+    { to: "/home", label: "Home" },
+    { to: "/community", label: "Community" },
   ];
-  const linksAtEnd = [{ to: id ? `/profile` : "/profile", label: "Profile" }];
-  const active = (path) => (pathname.includes(path) ? "active" : "");
-  const { pathname } = useLocation();
+  const linksAtEnd = [{ to: "/profile", label: "Profile" }];
+
+  
 
   const signout = async () => {
     await client.signout();
+    dispatch(setAccount({}))
     navigate("/home");
     alert("Signing you out");
   };
 
-  const fetchCurrentUser = async () => {
-    try {
-      const currentUser = await client.account();
+  // const fetchCurrentUser = async () => {
+  //   try {
+  //     const currentUser = await client.account();
 
-      if (currentUser._id === undefined) {
-        console.log("Anonymous user detected");
-        setCurrentUser(null);
-      } else {
-        setCurrentUser(currentUser);
-      }
-    } catch (error) {
-      console.log("Current user was not found");
-    }
-  };
+  //     if (currentUser._id === undefined) {
+  //       console.log("Anonymous user detected");
+  //       setCurrentUser(null);
+  //     } else {
+  //       setCurrentUser(currentUser);
+  //     }
+  //   } catch (error) {
+  //     console.log("Current user was not found");
+  //   }
+  // };
 
-  //check victora useeffect and render loading
+  // //check victora useeffect and render loading
   useEffect(() => {
-    fetchCurrentUser();
-  }, [currentUser]);
+  }, [userId]);
 
   return (
     <div className="d-flex justify-content-between p-2">
@@ -73,7 +78,7 @@ function Navigation() {
           </Link>
         ))}
         {/* shows sign in button if not logged in */}
-        {!currentUser && (
+        {!userId && (
           <Link
             key={"/signin"}
             to={"/signin"}
@@ -82,7 +87,7 @@ function Navigation() {
             Sign In
           </Link>
         )}
-        {currentUser && (
+        {userId && (
           <Link onClick={signout} className="btn bg-secondary text-white">
             Sign Out
           </Link>

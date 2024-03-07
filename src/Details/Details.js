@@ -12,6 +12,7 @@ import * as Client from "../Search/client"
 import * as LikesClient from "../Likes/client"
 import Navigation from "../Navigation/profile-Nav";
 import AltImg from "./DefaultImg.png"
+import { setAccount } from "../store/accountReducer";
 
 function Details() {
   const { trailId } = useParams();
@@ -19,29 +20,35 @@ function Details() {
   const [trail, setTrail] = useState()
   const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
-  const [account, setAccount] = useState({
-    _id: null,
-    username: "",
-    passowrd: "",
-    role: "REGULAR",
-  });
+  // const [account, setAccount] = useState({
+  //   _id: null,
+  //   username: "",
+  //   passowrd: "",
+  //   role: "REGULAR",
+  // });
+  const {account} = useSelector((state) => state.accountReducer)
+  const dispatch = useDispatch()
   const [likes, setLikes] = useState()
   const navigate = useNavigate();
   console.log(`details: ${JSON.stringify(account)}`)
 
   useEffect(() => {
-    try {
-      // Find the account of the current user
-      Client.account().then(user => {
-        setAccount(user)
-        // determine if this trail is favorited by the current user
-        if (user.favourites && user.favourites.filter(t => t.id === Number(trailId)).length > 0) {
-          console.log('this is favorited')
-          setIsFavorite(true)
-        }
-      })
-    } catch (err) {
-      console.log('You are not signed in')
+    // try {
+    //   // Find the account of the current user
+    //   Client.account().then(user => {
+    //     setAccount(user)
+    //     // determine if this trail is favorited by the current user
+    //     if (user.favourites && user.favourites.filter(t => t.id === Number(trailId)).length > 0) {
+    //       console.log('this is favorited')
+    //       setIsFavorite(true)
+    //     }
+    //   })
+    // } catch (err) {
+    //   console.log('You are not signed in')
+    // }
+    if (account.favourites && account.favourites.filter(t => t.id === Number(trailId)).length > 0) {
+      console.log('this is favorited')
+      setIsFavorite(true)
     }
     // Getting trail object
     Client.findTrailByID(trailId).then(t => {
@@ -63,7 +70,8 @@ function Details() {
     else {
       const updatedUser = await Client.addToFavorites(account, trail);
       console.log(updatedUser)
-      setAccount(updatedUser)
+      // setAccount(updatedUser)
+      dispatch(setAccount(updatedUser))
       setIsFavorite(true)
       // dispatch(setAccount(updatedUser))
       alert("Added trail to favorite!");
@@ -79,7 +87,8 @@ function Details() {
     else {
       const updatedUser = await Client.removeFromFavorites(account, trail);
       console.log(updatedUser)
-      setAccount(updatedUser)
+      // setAccount(updatedUser)
+      dispatch(setAccount(updatedUser))
       setIsFavorite(false)
       // dispatch(setAccount(updatedUser))
       alert("removed from favorites!");
@@ -190,7 +199,7 @@ function Details() {
   }
 
   return (
-    <div>{trail && likes && account? <div><Navigation/> {DetailsPage()}</div> : <div>Still Loading</div>}</div>
+    <div>{trail && likes && account? <div><Navigation userId={account._id} /> {DetailsPage()}</div> : <div>Still Loading</div>}</div>
   )
 }
 

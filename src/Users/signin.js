@@ -1,6 +1,9 @@
 import * as client from "./client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setAccount } from "../store/accountReducer";
+
 
 function Signin() {
   
@@ -13,6 +16,8 @@ function Signin() {
     role: "REGULAR",
   });
   const navigate = useNavigate();
+  const account = useSelector((state) => state.value)
+  const dispatch = useDispatch()
 
   const signin = async () => {
     try {
@@ -20,8 +25,10 @@ function Signin() {
         alert("Username and password cannot be empty!");
       } else {
         const currentUser = await client.signin(user);
-        console.log(currentUser);
-        setCurrentUser(currentUser);
+        // console.log(currentUser);
+        // setCurrentUser(currentUser);
+        dispatch(setAccount(currentUser))
+        console.log('signin: ' + account)
         navigate("/home");
       }
     } catch (err) {
