@@ -8,7 +8,7 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { FaCar, FaLocationDot } from "react-icons/fa6";
 import { CiCirclePlus } from "react-icons/ci";
 import { PiHeartFill, PiHeart } from "react-icons/pi";
-import * as LikesClient from './client'
+import * as LikesClient from '../Likes/client'
 import AltImg from "../Details/DefaultImg.png"
 import Navigation from "../Navigation/profile-Nav";
 
@@ -45,7 +45,6 @@ function Community() {
           <div className=" community">
             {
               likes.map((l) => (
-
                 <div className="card community shadow rounded">
                   <Link
                     className="community-link"
@@ -59,8 +58,8 @@ function Community() {
                       <p className="display-5 text-light">{l.name}</p>
                       <span className="text-light align-text-bottom m-0 display-7"><FaLocationDot className="me-1 mb-1" />{l.city}, {l.region}</span>
                     </div>
-
                   </Link>
+
                   <div className="card-body community ">
                     {/* <p className="display-6 fs-4 card-text fw-normal">Description</p>
                     <hr />
@@ -81,13 +80,9 @@ function Community() {
                     </div>
                   </div>
                 </div>
-
-
               ))
             }
-
           </div>
-
         </div>
       </div>
 
@@ -95,7 +90,7 @@ function Community() {
   }
 
   return (
-    <div>{likes ? <div><Navigation/> {community()} </div> : <div>Still Loading</div>}</div>
+    <div>{likes ? <div><Navigation/> {JSON.stringify(likes)} </div> : <div>Still Loading</div>}</div>
   )
 }
 
