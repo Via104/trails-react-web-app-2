@@ -6,33 +6,33 @@ const request = axios.create({
 const API_BASE = process.env.REACT_APP_API_BASE;
 const BASE_API = `${API_BASE}/likes`;
 
-export const createUserLikesTrail = async (trailId, title, description) => {
+export const createUserLikesTrail = async (userId, trail) => {
   const response = await request.post(
-    `${BASE_API}/user/trail/${trailId}`,
-    {title: title, description, description}
+    `${BASE_API}/users/${userId}/trails`,
+    trail
   );
   console.log("creating trail like")
   console.log(response.data)
   return response.data;
 };
 
-export const deleteUserLikesTrail = async (trailId) => {
+export const deleteUserLikesTrail = async (userId, trailId) => {
   const response = await request.delete(
-    `${BASE_API}/trail/${trailId}`
+    `${BASE_API}/users/${userId}/trails/${trailId}`
   );
   return response.data;
 };
 
-export const findUsersLikedTrail = async (trailId) => {
+export const findUsersOfLikedTrail = async (trailId) => {
   const response = await request.get(
-    `${BASE_API}/trails/${trailId}`
+    `${BASE_API}/trails/${trailId}/users`
   );
   return response.data;
 };
 
 export const findTrailsLikedByUser = async (userId) => {
   const response = await request.get(
-    `${BASE_API}/user/${userId}`
+    `${BASE_API}/users/${userId}/trails`
   );
   return response.data;
 };

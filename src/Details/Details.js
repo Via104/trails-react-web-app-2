@@ -18,80 +18,71 @@ function Details() {
   const { trailId } = useParams();
   console.log(`TRAIL ID: ${trailId}`)
   const [trail, setTrail] = useState()
-  const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
-  // const [account, setAccount] = useState({
-  //   _id: null,
-  //   username: "",
-  //   passowrd: "",
-  //   role: "REGULAR",
-  // });
   const {account} = useSelector((state) => state.accountReducer)
-  const dispatch = useDispatch()
-  const [likes, setLikes] = useState()
-  const navigate = useNavigate();
+  const [likes, setLikes] = useState([])
+
   console.log(`details: ${JSON.stringify(account)}`)
 
   useEffect(() => {
-    // try {
-    //   // Find the account of the current user
-    //   Client.account().then(user => {
-    //     setAccount(user)
-    //     // determine if this trail is favorited by the current user
-    //     if (user.favourites && user.favourites.filter(t => t.id === Number(trailId)).length > 0) {
-    //       console.log('this is favorited')
-    //       setIsFavorite(true)
-    //     }
-    //   })
-    // } catch (err) {
-    //   console.log('You are not signed in')
-    // }
-    if (account.favourites && account.favourites.filter(t => t.id === Number(trailId)).length > 0) {
-      console.log('this is favorited')
-      setIsFavorite(true)
-    }
     // Getting trail object
-    Client.findTrailByID(trailId).then(t => {
-      setTrail(t)
-    })
-    // Finding all users who like this trail
-    LikesClient.findUsersLikedTrail(trailId).then((r) => (
-      setLikes(r)
-    ));
-    console.log(`stored trail: ${trail}`)
-  }, [isFavorite])
+    const getTrailAndLikes = async () => {
+      Client.findTrailByID(trailId).then(t => {
+        setTrail(t)
+        console.log('trail')
+        console.log(trail)
+      })
 
+      LikesClient.findUsersOfLikedTrail(trailId).then(l => {
+        setLikes(l[0].users)
+        console.log('likes')
+        console.log(l[0].users)
+        // setIsFavorite becomes true if the current userId matches any of the userIds
+        // in this trails list of liked users
+        if (account._id && l[0].users.filter(user => user._id === account._id).length > 0) {
+          setIsFavorite(true)
+        }
+      })
+    }
+    getTrailAndLikes()
+  }, [trailId])
 
   const saveToFavorites = async (trail) => {
     // check if user is signed in
+    console.log("**saveToFavorites**")
+    console.log(trail)
     if (!account._id) {
       alert("Create account to add to favorites!")
     }
     else {
-      const updatedUser = await Client.addToFavorites(account, trail);
-      console.log(updatedUser)
-      // setAccount(updatedUser)
-      dispatch(setAccount(updatedUser))
-      setIsFavorite(true)
-      // dispatch(setAccount(updatedUser))
-      alert("Added trail to favorite!");
+      try {
+        const like = await LikesClient.createUserLikesTrail(account._id, trail);
+        setIsFavorite(true)
+        alert("Added trail to favorite!");
+      } 
+      catch (err) {
+        alert("failed to add to favorite")
+      }
     }
 
   };
 
   const removeFromFavorites = async (trail) => {
+    console.log('**removeFromFavorites')
     if (!account._id) {
       alert("Create account to add to favorites!")
-
     }
     else {
-      const updatedUser = await Client.removeFromFavorites(account, trail);
-      console.log(updatedUser)
-      // setAccount(updatedUser)
-      dispatch(setAccount(updatedUser))
+      try {
+        const status = await LikesClient.deleteUserLikesTrail(account._id, trail.id);
+      console.log(status)
       setIsFavorite(false)
-      // dispatch(setAccount(updatedUser))
       alert("removed from favorites!");
+      }
+      catch (err) {
+        console.log('removeFromFavorites failed')
+        console.log(err)
+      }
     }
   };
 
@@ -179,12 +170,12 @@ function Details() {
                 <p className="display-6 fs-4 card-text fw-normal">Likes</p>
                 <hr />
                 <div className="overflow">
-                  {likes.map((l) => (
+                  {likes && likes.map((l) => (
                     <div className="">
                       <Link
-                        to={`/profile/${l.user._id}`} //{trail.url}
+                        to={`/profile/${l._id}`} //{trail.url}
                         style={{ 'textDecoration': "none" }}>
-                        <p className="ms-2 card-text text-dark me-2"><PiHeartFill className="text-danger mb-1 me-1" />Liked by {l.user.username}</p>
+                        <p className="ms-2 card-text text-dark me-2"><PiHeartFill className="text-danger mb-1 me-1" />Liked by {l.username}</p>
                       </Link>
                     </div>
                   ))}
@@ -199,7 +190,7 @@ function Details() {
   }
 
   return (
-    <div>{trail && likes && account? <div><Navigation userId={account._id} /> {DetailsPage()}</div> : <div>Still Loading</div>}</div>
+    <div>{trail && account? <div><Navigation userId={account._id} /> {DetailsPage()}</div> : <div>Still Loading</div>}</div>
   )
 }
 
