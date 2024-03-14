@@ -13,26 +13,13 @@ import AltImg from "../Details/DefaultImg.png"
 import Navigation from "../Navigation/profile-Nav";
 
 function Community() {
-  // const account = useSelector((state) => state.accountReducer.account)
   const [likes, setLikes] = useState()
-  const [account, setAccount] = useState({})
+  const {account} = useSelector((state) => state.accountReducer)
 
   useEffect(() => {
-    // try {
-    //   UserClient.account().then(user => {
-    //     // dispatch(setAccount(user));
-    //     setAccount(user)
-    //     console.log(`in fetch Account`)
-    //     console.log(account)
-    //   })
-    // } catch (err) {
-    //   console.log('You are not signed in')
-    // }
     LikesClient.findLikedTrails().then(l => {
       setLikes(l)
-
     })
-
   }, [])
 
 
@@ -67,7 +54,7 @@ function Community() {
                     <p className="display-6 fs-4 card-text fw-normal">Activity</p>
                     <hr />
                     <div className="activity">
-                      {l.users.map((user) => (
+                      {l.user_docs.map((user) => (
                         <div className="">
                           <Link
                             className="community-link"
@@ -90,9 +77,8 @@ function Community() {
   }
 
   return (
-    <div>{likes ? <div><Navigation/> {JSON.stringify(likes)} </div> : <div>Still Loading</div>}</div>
+    <div>{likes ? <div><Navigation userId={account._id} /> {community()} </div> : <div>Still Loading</div>}</div>
   )
 }
-
 
 export default Community;
